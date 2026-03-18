@@ -307,5 +307,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Disclaimer
 
-This tool is designed to support incident response activities and is not a substitute for professional incident response expertise. Action notes and guidance reflect general industry practice and the author's operational experience. They do not constitute legal, compliance, or professional services advice. Always validate actions against your specific environment before execution. Some actions carry significant business impact — review carefully before applying in production.
+**This tool is designed to support incident response activities and is not a substitute for professional incident response expertise. Action notes and guidance reflect general industry practice and the author's operational experience. They do not constitute legal, compliance, or professional services advice. Always validate actions against your specific environment before execution. Some actions carry significant business impact — review carefully before applying in production**.
 
