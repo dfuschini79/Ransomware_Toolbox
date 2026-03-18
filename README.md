@@ -309,3 +309,14 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 **This tool is designed to support incident response activities and is not a substitute for professional incident response expertise. Action notes and guidance reflect general industry practice and the author's operational experience. They do not constitute legal, compliance, or professional services advice. Always validate actions against your specific environment before execution. Some actions carry significant business impact — review carefully before applying in production**.
 
+## References
+https://services.google.com/fh/files/misc/ransomware-protection-and-containment-strategies-report-en.pdf
+https://www.microsoft.com/content/dam/microsoft/final/en-us/microsoft-brand/documents/MS-IR-Playbook-Final.pdf
+https://mikecybersec.notion.site/ESXi-IR-Guide-0ffbcec7272244d6b10dba4f4d16a7c8?pvs=7
+https://www.youtube.com/watch?v=a5nnrCY8VX8&pp=ygUreW91dHViZSBjcm93ZHN0cmlrZSByYW5zb213YXJlIGNvbnRhaW5tZW50IA%3D%3D
+https://cloud.google.com/blog/topics/threat-intelligence/unc3944-proactive-hardening-recommendations
+https://www.paloaltonetworks.com/resources/research/unit-42-incident-response-report
+https://www.sans.org/posters/ransomware-and-cyber-extortion
+https://www.youtube.com/watch?v=ZT_kCKRCVkE&pp=ygUkY3liZXJmb3ggcXVpY2t3aW5zIHJhbm9zb213YXJlIGF0dGFr
+https://cloud.google.com/blog/topics/threat-intelligence/expansion-shinyhunters-saas-data-theft
+
