@@ -153,7 +153,7 @@ No build step, no package manager, no server required beyond a basic file server
 
 The containment and recovery data live in `containment-actions.json` and `recovery-actions.json`. Edit those files directly — the application reads them fresh on each page load. Each action follows this schema:
 
-```json
+
 {
 "id": 70,
 "activity": "Your Action Title",
@@ -168,7 +168,7 @@ The containment and recovery data live in `containment-actions.json` and `recove
 "ces": 4,
 "depends_on": [53]
 }
----
+
 Field reference:
 
 | Field | Values | Notes |
@@ -185,7 +185,7 @@ Field reference:
 
 ### Adding a ransomware group
 
-```json
+
 {
 "id": "my_group",
 "name": "GroupName",
@@ -197,7 +197,7 @@ Field reference:
 "infra_targets": ["windows_ad", "vmware"],
 "priority_actions": [4, 7, 13, 29, 43, 60]
 }
----
+
 
 `priority_actions` lists the action IDs that receive a sort boost when this group is selected — put your highest-confidence TTP-matched actions here.
 
@@ -216,7 +216,7 @@ CES is the primary sort key for every action. It is a 1–4 integer that balance
 | 2 | Moderate | Medium effectiveness or high-impact action that needs deliberate judgement |
 | 1 | Low | Low effectiveness or low-value activity in the current context |
 
-**How CES is calculated:**
+How CES is calculated:
 
 Each action has two fields: `effectiveness` and `business_impact`. Both are five-tier scales (`High`, `Medium-High`, `Medium`, `Low-Medium`, `Low`). The formula rewards high effectiveness and penalises high business impact, so an action that is highly effective but also highly disruptive scores lower than one that is equally effective but low-impact.
 
@@ -224,21 +224,21 @@ If you set the `ces` field directly on an action in the JSON, that value is used
 
 The CES score is visible on every action card as a labelled pill (Optimal / Good / Moderate / Low) with a dot indicator. Users can also override the business impact per-action in the UI using the impact toggle, which recalculates the effective CES for that session without editing the JSON.
 
-### Full Sort Order
+Full Sort Order
 
 Actions are ranked by a composite score computed as follows, in descending priority:
 
-1. **Priority action pinning** — actions flagged as priority for the current phase and context float to the very top, regardless of CES or any other factor. These are not sortable — they are always first.
+1. Priority action pinning — actions flagged as priority for the current phase and context float to the very top, regardless of CES or any other factor. These are not sortable — they are always first.
 
-2. **CES (1–4)** — the primary sort key for all non-pinned actions. A CES=4 action always outranks a CES=3 action, and so on.
+2. CES (1–4) — the primary sort key for all non-pinned actions. A CES=4 action always outranks a CES=3 action, and so on.
 
-3. **TTP match bonus** — if the selected ransomware group has TA tags (e.g., `cred_dump`, `exfil`) and an action's `ta` array contains one or more of those tags, a small bonus is added per matching tag. This causes group-relevant actions to surface above generic ones with the same CES.
+3. TTP match bonus — if the selected ransomware group has TA tags (e.g., `cred_dump`, `exfil`) and an action's `ta` array contains one or more of those tags, a small bonus is added per matching tag. This causes group-relevant actions to surface above generic ones with the same CES.
 
-4. **Group priority boost** — if the selected ransomware group lists an action in its `priority_actions` array, that action receives an additional boost. This is the mechanism by which group-specific intelligence influences ranking: an IR team handling LockBit sees DC isolation and backup actions boosted; one handling Scattered Spider sees OAuth revocation and help desk protocols boosted.
+4. Group priority boost — if the selected ransomware group lists an action in its `priority_actions` array, that action receives an additional boost. This is the mechanism by which group-specific intelligence influences ranking: an IR team handling LockBit sees DC isolation and backup actions boosted; one handling Scattered Spider sees OAuth revocation and help desk protocols boosted.
 
-5. **Phase match bonus** — actions whose `phases` array includes the declared kill chain stage receive a small additional bonus over cross-phase actions that appear only because of mandatory pinning.
+5. Phase match bonus — actions whose `phases` array includes the declared kill chain stage receive a small additional bonus over cross-phase actions that appear only because of mandatory pinning.
 
-### Priority Action Pinning
+Priority Action Pinning
 
 Certain actions are pinned to the top of the plan unconditionally — they appear before any CES-scored actions and cannot be filtered out. Pinning is rule-based and context-conditional:
 
@@ -252,27 +252,27 @@ Certain actions are pinned to the top of the plan unconditionally — they appea
 
 These rules encode the most time-critical actions for each scenario — actions where a wrong decision or omission has an outsized consequence. They are always shown with a "Priority Action" badge and are checked separately from the standard progress counter.
 
-### Dependency Blocking
+Dependency Blocking
 
 Actions with a `depends_on` relationship display a sequencing warning on the card and the checkbox is disabled until all prerequisite actions are marked complete. This is not advisory — it is a hard block in the UI. The dependency system encodes ordering constraints where the wrong sequence creates a worse outcome than not acting at all (for example, rotating credentials into a compromised vault before isolating it).
 
-### Decision Gates
+Decision Gates
 
 One action — Firewall QoS Delay (ID 51) — is marked as a decision gate. When it appears in the plan, the card carries a prominent warning that this is a mutually exclusive strategy: choosing to delay and investigate (this action) is incompatible with choosing to block and evict (DNS Sinkhole, Egress Filtering, Block ALL Traffic, Block TOR Ranges). The notes make the tradeoff explicit and prevent a responder from running both strategies simultaneously.
 
-## Design Principles
+Design Principles
 
-**1. Context over comprehensiveness.** Every filter — phase, infra, TA activity, group — narrows the action list to what is actually applicable. A responder dealing with Cl0p on SaaS gets ~14 targeted actions, not 68 generic ones.
+1. Context over comprehensiveness. Every filter — phase, infra, TA activity, group — narrows the action list to what is actually applicable. A responder dealing with Cl0p on SaaS gets ~14 targeted actions, not 68 generic ones.
 
-**2. Errors are caught before they happen.** Dependency chains block the wrong order of operations at the UI level. Conflict notes prevent double effort. Redundancy flags prevent wasted time. The tool fails safe.
+2. Errors are caught before they happen. Dependency chains block the wrong order of operations at the UI level. Conflict notes prevent double effort. Redundancy flags prevent wasted time. The tool fails safe.
 
-**3. Speed is a safety property.** Ransomware IR is a time-critical discipline. Every second spent searching a playbook for the right action is a second the attacker is still running. The CES scoring, priority pinning, and "I Don't Know" mode are all designed to produce an immediately actionable top-5 within 60 seconds of opening the tool.
+3. Speed is a safety property. Ransomware IR is a time-critical discipline. Every second spent searching a playbook for the right action is a second the attacker is still running. The CES scoring, priority pinning, and "I Don't Know" mode are all designed to produce an immediately actionable top-5 within 60 seconds of opening the tool.
 
-**4. The log is the audit trail.** Every meaningful action — phase selection, action completed, action flagged N/A — is auto-logged with a timestamp. The session can be exported and loaded by a shift handoff. The exported report is a complete incident timeline.
+4. The log is the audit trail. Every meaningful action — phase selection, action completed, action flagged N/A — is auto-logged with a timestamp. The session can be exported and loaded by a shift handoff. The exported report is a complete incident timeline.
 
-**5. JSON-driven.** The data layer is fully separated from the application layer. All actions, groups, and recovery sections live in editable JSON — no code changes required to add, remove, or update any content.
+5. JSON-driven. The data layer is fully separated from the application layer. All actions, groups, and recovery sections live in editable JSON — no code changes required to add, remove, or update any content.
 
-## Contributing
+Contributing
 
 Contributions to the action data, group profiles, and detection logic are welcome. The most useful contributions are:
 
@@ -282,10 +282,10 @@ Contributions to the action data, group profiles, and detection logic are welcom
 - **Dependency additions** — sequencing relationships between actions that have real-world ordering risk
 - **Conflict documentation** — notes on redundancy or mutual exclusion between actions
 
-## License
+License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
-## Disclaimer
+Disclaimer
 
-This tool is designed to support incident response activities and is not a substitute for professional incident response expertise. Action notes and guidance reflect general industry practice and the author's operational experience. They do not constitute legal, compliance, or professional services advice. Always validate actions against your specific environment before execution. Some actions carry significant business impact — review carefully before applying in production.
+**This tool is designed to support incident response activities and is not a substitute for professional incident response expertise. Action notes and guidance reflect general industry practice and the author's operational experience. They do not constitute legal, compliance, or professional services advice. Always validate actions against your specific environment before execution. Some actions carry significant business impact — review carefully before applying in production.**
