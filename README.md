@@ -168,8 +168,8 @@ The containment and recovery data live in `containment-actions.json` and `recove
 "ces": 4,
 "depends_on": [53]
 }
-
-**Field reference:**
+---
+Field reference:
 
 | Field | Values | Notes |
 |---|---|---|
@@ -197,6 +197,7 @@ The containment and recovery data live in `containment-actions.json` and `recove
 "infra_targets": ["windows_ad", "vmware"],
 "priority_actions": [4, 7, 13, 29, 43, 60]
 }
+---
 
 `priority_actions` lists the action IDs that receive a sort boost when this group is selected — put your highest-confidence TTP-matched actions here.
 
