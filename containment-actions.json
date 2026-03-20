@@ -1,0 +1,2128 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Ransomware IR Toolbox — Containment & Eradication Actions",
+    "notes": "Edit this file to add, remove, or update containment actions. Each action needs a unique id (integer). Phases: initial_access | lateral_movement | pre_encryption | active_encryption | post_encryption. Infra: windows_ad | vmware | cloud | saas | federated | mixed. TA tags: rdp | rmm | exfil | cred_dump | dc_access | backup_access | unknown. Killchain: recon | initial_access | execution | persistence | privilege_esc | lateral | collection | impact. Effectiveness: High | Medium-High | Medium | Low-Medium | Low. Business_impact: High | Medium-High | Medium | Low-Medium | Low. CES (Containment Effectiveness Score): integer 1–4.   1=LOW: low effectiveness or low-value activity.   2=MODERATE: medium effectiveness or high-impact action.   3=GOOD: high effectiveness with moderate impact, or essential emergency actions.   4=OPTIMAL: high effectiveness with low disruption — prioritise these first. If 'ces' is omitted, the app auto-computes it from effectiveness and business_impact. To change a score: edit the 'ces' value on the action and reload the file."
+  },
+  "killchain_stages": [
+    {
+      "id": "recon",
+      "label": "Recon",
+      "icon": "🔍",
+      "color": "#6366f1",
+      "phases": []
+    },
+    {
+      "id": "initial_access",
+      "label": "Initial Access",
+      "icon": "🔓",
+      "color": "#f59e0b",
+      "phases": [
+        "initial_access"
+      ]
+    },
+    {
+      "id": "execution",
+      "label": "Execution",
+      "icon": "⚙️",
+      "color": "#f59e0b",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ]
+    },
+    {
+      "id": "persistence",
+      "label": "Persistence",
+      "icon": "🔗",
+      "color": "#e8401a",
+      "phases": [
+        "lateral_movement"
+      ]
+    },
+    {
+      "id": "privilege_esc",
+      "label": "Priv Escalation",
+      "icon": "⬆️",
+      "color": "#e8401a",
+      "phases": [
+        "lateral_movement"
+      ]
+    },
+    {
+      "id": "lateral",
+      "label": "Lateral Movement",
+      "icon": "↔️",
+      "color": "#e8401a",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ]
+    },
+    {
+      "id": "collection",
+      "label": "Collection/Exfil",
+      "icon": "📦",
+      "color": "#e8401a",
+      "phases": [
+        "pre_encryption"
+      ]
+    },
+    {
+      "id": "impact",
+      "label": "Impact/Encrypt",
+      "icon": "💥",
+      "color": "#e8401a",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ]
+    }
+  ],
+  "ransomware_groups": [
+    {
+      "id": "none",
+      "name": "Unknown / Not Listed",
+      "sector": "General",
+      "desc": "Use generic prioritization — no group-specific TTP boosts applied.",
+      "ttps": [],
+      "ta_tags": [],
+      "kill_chain_focus": [],
+      "infra_targets": [],
+      "priority_actions": []
+    },
+    {
+      "id": "lockbit",
+      "name": "LockBit 3.0",
+      "sector": "Manufacturing, Finance, Healthcare",
+      "desc": "Most prolific ransomware group. Ransomware-as-a-Service with wide affiliate network. Uses AnyDesk, Cobalt Strike, and stolen AD credentials. Targets ESXi, backups, and file servers. Fast encryption speed.",
+      "ttps": [
+        "AnyDesk persistence",
+        "Cobalt Strike C2",
+        "ESXi targeting",
+        "Backup deletion",
+        "StealBit exfil",
+        "Credential theft"
+      ],
+      "ta_tags": [
+        "rmm",
+        "exfil",
+        "cred_dump",
+        "backup_access"
+      ],
+      "kill_chain_focus": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad",
+        "vmware"
+      ],
+      "priority_actions": [
+        1,
+        2,
+        7,
+        9,
+        19,
+        23,
+        29,
+        48
+      ]
+    },
+    {
+      "id": "blackcat",
+      "name": "ALPHV / BlackCat",
+      "sector": "Healthcare, Finance, Energy",
+      "desc": "Sophisticated RaaS written in Rust. Uses triple extortion. Targets VMware ESXi aggressively. Known for healthcare sector attacks and working with Scattered Spider. Uses Exmatter for exfiltration.",
+      "ttps": [
+        "ESXi encryption",
+        "ExMatter exfil",
+        "Cobalt Strike",
+        "Credential access",
+        "Living-off-the-land",
+        "Triple extortion"
+      ],
+      "ta_tags": [
+        "cred_dump",
+        "exfil",
+        "dc_access"
+      ],
+      "kill_chain_focus": [
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra_targets": [
+        "vmware",
+        "windows_ad"
+      ],
+      "priority_actions": [
+        1,
+        5,
+        13,
+        19,
+        23,
+        25,
+        29,
+        35,
+        37
+      ]
+    },
+    {
+      "id": "akira",
+      "name": "Akira",
+      "sector": "Education, Finance, Manufacturing",
+      "desc": "Emerged 2023, targets SMBs aggressively. Initial access via Cisco VPN (no MFA), AnyDesk, and compromised credentials. Exfiltrates before encryption using WinSCP and cloud storage. Known for fast dwell time.",
+      "ttps": [
+        "Cisco VPN exploit",
+        "AnyDesk",
+        "WinSCP exfil",
+        "Credential dumping",
+        "Disable Windows Defender",
+        "Cobalt Strike"
+      ],
+      "ta_tags": [
+        "rdp",
+        "rmm",
+        "exfil",
+        "cred_dump"
+      ],
+      "kill_chain_focus": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad",
+        "vmware"
+      ],
+      "priority_actions": [
+        4,
+        7,
+        9,
+        15,
+        31,
+        36,
+        39,
+        55
+      ]
+    },
+    {
+      "id": "play",
+      "name": "Play",
+      "sector": "Government, Healthcare, Retail",
+      "desc": "Targets public-facing applications (FortiOS, Exchange ProxyNotShell). No affiliate model — operates privately. Disables AV/EDR using GMER and IObit Unlocker. Uses WinSCP for exfil. Known for double extortion.",
+      "ttps": [
+        "FortiOS CVE",
+        "Exchange ProxyNotShell",
+        "WinSCP exfil",
+        "AV/EDR disable",
+        "Cobalt Strike",
+        "PsExec"
+      ],
+      "ta_tags": [
+        "exfil",
+        "cred_dump",
+        "dc_access"
+      ],
+      "kill_chain_focus": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad"
+      ],
+      "priority_actions": [
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        16,
+        17,
+        29,
+        40,
+        43,
+        46,
+        47,
+        54,
+        59,
+        60
+      ]
+    },
+    {
+      "id": "clop",
+      "name": "Cl0p",
+      "sector": "Finance, Legal, Government",
+      "desc": "Known for mass exploitation of zero-days (MOVEit, GoAnywhere, Accellion). Focuses on data theft and extortion — sometimes without encryption. Long dwell time. Very large-scale operations.",
+      "ttps": [
+        "MOVEit exploit",
+        "GoAnywhere exploit",
+        "Data-only extortion",
+        "Mass exploitation",
+        "Long dwell time",
+        "Rclone exfil"
+      ],
+      "ta_tags": [
+        "exfil",
+        "unknown"
+      ],
+      "kill_chain_focus": [
+        "initial_access",
+        "pre_encryption"
+      ],
+      "infra_targets": [
+        "saas",
+        "cloud"
+      ],
+      "priority_actions": [
+        15,
+        18,
+        34,
+        37,
+        53,
+        56
+      ]
+    },
+    {
+      "id": "blackbasta",
+      "name": "Black Basta",
+      "sector": "Healthcare, Manufacturing, Construction",
+      "desc": "Former Conti members. Uses Qakbot, SystemBC, and Cobalt Strike. Targets ESXi and Windows simultaneously. Fast encryption with AES-256 + RSA-4096. Uses AnyDesk and tools from Conti playbook.",
+      "ttps": [
+        "Qakbot delivery",
+        "Cobalt Strike",
+        "SystemBC RAT",
+        "ESXi targeting",
+        "AES-256+RSA encryption",
+        "AnyDesk persistence"
+      ],
+      "ta_tags": [
+        "rmm",
+        "cred_dump",
+        "dc_access",
+        "backup_access"
+      ],
+      "kill_chain_focus": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad",
+        "vmware"
+      ],
+      "priority_actions": [
+        1,
+        2,
+        7,
+        14,
+        19,
+        23,
+        36,
+        42,
+        48
+      ]
+    },
+    {
+      "id": "medusa",
+      "name": "Medusa",
+      "sector": "Healthcare, Education, Government",
+      "desc": "Active since 2021, surged in 2023. Exploits RDP and phishing for initial access. Uses Cobalt Strike and Living-off-the-Land binaries. Targets backups aggressively. Double extortion via Medusa Blog.",
+      "ttps": [
+        "RDP brute force",
+        "Phishing",
+        "Cobalt Strike",
+        "LOTL binaries",
+        "Backup deletion",
+        "Double extortion"
+      ],
+      "ta_tags": [
+        "rdp",
+        "cred_dump",
+        "backup_access",
+        "dc_access"
+      ],
+      "kill_chain_focus": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad"
+      ],
+      "priority_actions": [
+        2,
+        6,
+        28,
+        29,
+        38,
+        40,
+        41,
+        46,
+        48
+      ]
+    },
+    {
+      "id": "rhysida",
+      "name": "Rhysida",
+      "sector": "Healthcare, Education, Government",
+      "desc": "Relatively new group that surged in 2023-24. Targets healthcare aggressively. Uses PhishingRedirect, valid accounts via RDP, and Cobalt Strike. Sells victim data on leak site. Known for targeting NAS and backup systems.",
+      "ttps": [
+        "Phishing",
+        "Valid accounts",
+        "RDP",
+        "Cobalt Strike",
+        "NAS targeting",
+        "Backup destruction"
+      ],
+      "ta_tags": [
+        "rdp",
+        "backup_access",
+        "cred_dump"
+      ],
+      "kill_chain_focus": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad"
+      ],
+      "priority_actions": [
+        1,
+        2,
+        31,
+        36,
+        39,
+        48
+      ]
+    },
+    {
+      "id": "royal",
+      "name": "Royal / BlackSuit",
+      "sector": "Healthcare, Manufacturing",
+      "desc": "Former Conti members. Uses callback phishing (BazarCall), Cobalt Strike, and legitimate admin tools. Partial encryption to evade detection. Known for targeted, manual attack style with long dwell time.",
+      "ttps": [
+        "BazarCall phishing",
+        "Cobalt Strike",
+        "Partial encryption",
+        "Long dwell time",
+        "Manual approach"
+      ],
+      "ta_tags": [
+        "rmm",
+        "cred_dump",
+        "dc_access"
+      ],
+      "kill_chain_focus": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra_targets": [
+        "windows_ad"
+      ],
+      "priority_actions": [
+        6,
+        8,
+        28,
+        29,
+        42,
+        46,
+        47
+      ]
+    },
+    {
+      "id": "scattered_spider",
+      "name": "Scattered Spider",
+      "sector": "Hospitality, Finance, Insurance",
+      "desc": "Highly skilled social engineering group. SIM swapping, MFA fatigue, and help desk impersonation for initial access. Targets Okta, Azure AD, and cloud infrastructure. Partners with ALPHV/BlackCat for ransomware deployment.",
+      "ttps": [
+        "Social engineering",
+        "SIM swap",
+        "MFA fatigue",
+        "Help desk impersonation",
+        "Okta targeting",
+        "Azure AD abuse"
+      ],
+      "ta_tags": [
+        "cred_dump",
+        "dc_access",
+        "exfil"
+      ],
+      "kill_chain_focus": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra_targets": [
+        "saas",
+        "cloud",
+        "windows_ad"
+      ],
+      "priority_actions": [
+        5,
+        30,
+        31,
+        32,
+        33,
+        49,
+        53,
+        61,
+        66,
+        67,
+        68,
+        69
+      ]
+    },
+    {
+      "id": "qilin",
+      "name": "Qilin",
+      "aliases": [
+        "Agenda"
+      ],
+      "priority": 2,
+      "ttps": [
+        "VMware ESXi targeting",
+        "Credential theft",
+        "RDP lateral movement",
+        "Custom ransomware in Go/Rust",
+        "Data exfiltration before encryption"
+      ],
+      "notes": "Cross-platform ransomware targeting ESXi and Linux. Known for VMware-focused attacks and credential harvesting from browser stores."
+    },
+    {
+      "id": "inc",
+      "name": "INC Ransom",
+      "aliases": [
+        "INC"
+      ],
+      "priority": 2,
+      "ttps": [
+        "Citrix NetScaler exploitation",
+        "Credential dumping",
+        "Lateral movement via RDP",
+        "Data exfiltration",
+        "Double extortion"
+      ],
+      "notes": "Active since mid-2023. Initial access via Citrix and exposed RDP. Deploys encryptors across Windows and Linux systems."
+    },
+    {
+      "id": "warlock",
+      "name": "Warlock",
+      "aliases": [],
+      "priority": 2,
+      "ttps": [
+        "Phishing initial access",
+        "Credential dumping",
+        "Lateral movement",
+        "Data exfiltration",
+        "Double extortion"
+      ],
+      "notes": "Emerging ransomware group. Phishing-led initial access followed by credential harvesting and data theft before encryption."
+    },
+    {
+      "id": "lynx",
+      "name": "Lynx",
+      "aliases": [],
+      "priority": 2,
+      "ttps": [
+        "Valid account abuse",
+        "RDP lateral movement",
+        "Credential dumping",
+        "Data exfiltration",
+        "Double extortion"
+      ],
+      "notes": "Active group targeting mid-market organisations. Leverages valid credentials and RDP for lateral movement."
+    },
+    {
+      "id": "dragonforce",
+      "name": "DragonForce",
+      "aliases": [],
+      "priority": 2,
+      "ttps": [
+        "Social engineering",
+        "MFA manipulation",
+        "Credential harvesting",
+        "SaaS data exfiltration",
+        "Double extortion",
+        "DDoS pressure"
+      ],
+      "notes": "Ransomware-as-a-service operator. Overlaps with Scattered Spider TTPs — social engineering, vishing, SaaS targeting. Claimed responsibility for UK retail attacks in 2025."
+    },
+    {
+      "id": "safeplay",
+      "name": "SafePay",
+      "aliases": [
+        "SafePay"
+      ],
+      "priority": 2,
+      "ttps": [
+        "Valid account abuse",
+        "Credential dumping",
+        "Lateral movement via RDP",
+        "Data exfiltration",
+        "VMware ESXi targeting"
+      ],
+      "notes": "Emerging group targeting critical infrastructure and enterprise environments. VMware and Windows environments primary focus."
+    },
+    {
+      "id": "sinobi",
+      "name": "Sinobi",
+      "aliases": [],
+      "priority": 2,
+      "ttps": [
+        "Phishing",
+        "Credential dumping",
+        "Lateral movement",
+        "Data exfiltration",
+        "Double extortion"
+      ],
+      "notes": "Emerging ransomware group. Limited public reporting. Phishing-led with standard credential harvesting and lateral movement pattern."
+    }
+  ],
+  "actions": [
+    {
+      "id": 1,
+      "activity": "Isolate Key Systems",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "High",
+      "notes": "Isolate all systems considered critical to operations when the full scope of attacker access is unknown and there is insufficient visibility to apply more targeted containment. Use this action when you cannot yet determine which specific hosts are compromised and need to reduce the blast radius immediately.\n\nSystems to prioritise for isolation:\n• Domain Controllers and authentication infrastructure\n• Backup servers and storage systems\n• File servers holding sensitive or business-critical data\n• Financial and ERP systems\n• Any system whose compromise would enable ransomware to spread further or survive recovery\n\nIsolation methods: use EDR network isolation if agents are deployed and active, VLAN reassignment at the switch, firewall ACL per host IP, or physical cable pull for on-premises systems. Do not power off isolated systems — volatile memory (running processes, active connections, encryption keys) is critical for forensics.\n\nNOTE: SEE ALSO: ID 4 (Isolate Host) for targeted single-host isolation with full method guidance. ID 3 (Isolate Network) for segment-level isolation when multiple hosts in a zone are affected.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "impact",
+      "ces": 3
+    },
+    {
+      "id": 2,
+      "activity": "Isolate One Domain Controller",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "High",
+      "notes": "Isolate one Domain Controller per domain as a clean reference point and to protect the most sensitive AD state from further attacker manipulation. Use this action when the full scope of attacker access is unknown and there is insufficient visibility to apply more targeted containment — preserving a clean DC ensures you retain a trusted authentication and GPO baseline regardless of what else is compromised.\n\nPrioritise the PDC Emulator first, it holds the most operationally critical FSMO roles (time synchronisation, password changes, account lockout processing, and GPO editing authority) and is the primary target for attackers seeking to maintain domain-wide control.\n\nBefore isolating, confirm the following:\n• You know the DSRM (Directory Services Restore Mode) password for the DC being isolated. Without it, you cannot log into the DC in recovery mode if AD services fail.\n• Offline backups of SYSVOL (%SYSTEMROOT%\\SYSVOL\\*) and all GPOs are available and current on the DC being isolated.\n• At least one other DC remains reachable to service authentication requests during isolation, isolating the only DC in the domain will take down all domain authentication.\n\nTo identify the PDC Emulator, use the netdom query fsmo command or check the PDC Emulator attribute in Active Directory Users and Computers.\n\nIsolation steps:\n1. Disconnect all network interfaces on the DC (physical cable pull, vSwitch disconnect, or EDR network isolation, do not power off)\n2. Confirm the DC is no longer reachable from the network before proceeding\n3. Do not shut down or reboot: keep the DC powered on to preserve volatile memory and prevent any restart-triggered processes\n4. Repeat for each domain within managed and trusted forests if the compromise scope extends across forest trusts\n\nWARNING: If the PDC Emulator is confirmed compromised, transfer the FSMO roles to a clean DC before isolating it, otherwise PDC-dependent functions (password changes, lockout processing, time sync) will fail across the domain until roles are seized or transferred.\n\nNOTE: SEE ALSO: This action is pinned as a Priority Action when lateral movement is confirmed and DC access has been observed. It works alongside ID 5 (Disable AD-Entra Sync) and ID 13 (Rotate All Privileged Credentials), isolate the DC and sever sync before rotating credentials to prevent new passwords from being read or overwritten via still-active replication channels.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access",
+        "cred_dump"
+      ],
+      "killchain": "persistence",
+      "ces": 3
+    },
+    {
+      "id": 3,
+      "activity": "Isolate Network",
+      "effectiveness": "Medium-High",
+      "category": "Network Segmentation",
+      "business_impact": "High",
+      "notes": "Segment or cut off network zones where attacker activity is confirmed or suspected. Unlike host isolation (ID 4), network isolation targets an entire segment, a VLAN, subnet, or cloud VPC, and is appropriate when multiple hosts in a zone are affected or when host-by-host isolation is too slow.\n\nCommon isolation methods:\n• VLAN: reassign switch ports to an isolated VLAN with no routing to production\n• Firewall ACL: apply deny-all rules to the segment at the perimeter or core switch\n• Cloud security group: remove inbound/outbound rules or apply a deny-all policy to the VPC or subnet\n• Physical disconnect: for small environments, physically removing the uplink switch cable isolates the segment immediately\n\nWARNING: Confirm which critical systems reside in the segment before isolating, you may cut access to backup infrastructure, identity providers, or management tools. For more surgical containment, prefer ID 4 (host isolation) where the scope is known.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 4,
+      "activity": "Isolate Host",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Low-Medium",
+      "notes": "Remove the compromised or suspected host from the network to stop lateral movement and cut the attacker's access while preserving the system for forensics. This is the most precise and lowest-impact containment action — it targets one system at a time without affecting the wider network.\n\nThe correct isolation method depends entirely on what is already deployed on the host. For compromised hosts, network-level isolation is always the right approach regardless of EDR status:\n\nIf EDR is already installed and active on the host:\nUse the EDR console's network isolation command — Most enterprise EDR platforms provide a one-click network isolation that blocks all traffic except the EDR management channel. This is the fastest available method and leaves the agent running for live forensic collection.\nThe key distinction: you are not installing new software. You are sending a command to an agent that is already running. The attacker may already know the EDR is present, so triggering its isolation function does not introduce new detection risk. If the attacker responds to isolation by accelerating encryption, that is a reason to act faster — not a reason to delay isolation. A host left on the network after compromise is worse than a host that gets isolated even if the attacker reacts.\n\nIf EDR is NOT installed on the host:\nBe careful deploying an EDR agent to a known or suspected compromised host during the incident. Deploying new software to a compromised host gives the attacker a visible signal of detection and may trigger immediate encryption or evidence destruction. Use network-level isolation instead:\n• VLAN: reassign the switch port to an isolated VLAN with no routing to production\n• Firewall ACL: apply a deny-all rule for the host's IP at the perimeter or core switch\n• Cloud security group: remove all inbound and outbound rules for the instance, or apply a deny-all policy\n• Physical disconnect: pull the network cable or disable the NIC via Device Manager\n• Virtual machine: disconnect the vNIC in vCenter/ESXi without powering off the VM\n\nWARNING: Regardless of isolation method — do NOT power off the host. Powering off destroys volatile memory (running processes, active network connections) that is critical for forensics. Isolate on the network and leave the system running.\n\nVerify isolation worked: attempt a ping or connection to the host from another system — it should be unreachable. If using EDR-based isolation, confirm the console shows the host in an isolated state.\n\nNOTE: SEE ALSO: ID 3 (Isolate Network) covers segment-level isolation when multiple hosts in a zone are affected and host-by-host isolation is too slow. ID 6 (Deploy EDR) covers where to deploy EDR during an incident and why deployment to compromised hosts is specifically avoided.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 4
+    },
+    {
+      "id": 5,
+      "activity": "AD on Prem + Entra — Disable Sync",
+      "effectiveness": "Medium-High",
+      "category": "Identities",
+      "business_impact": "High",
+      "notes": "Disable the sync between on-premises Active Directory and Entra ID to prevent an on-prem compromise from propagating to the cloud, or a cloud compromise from writing back to on-premises infrastructure. While sync is active, an attacker with domain admin access can push changes directly into Entra ID, and a cloud-side compromise can write back credential changes to on-premises AD.\n\nWARNING: TIMING CAVEAT: Disabling sync does not take effect instantly. Propagation is not immediate — do not assume sync is severed the moment you execute the command. Monitor Entra ID sync status to confirm the change has taken effect and treat the environment as still connected until confirmed.\n\nMethod 1: Entra ID Admin Portal (recommended during incident, no PowerShell dependency):\n1. Sign in to Entra ID admin center (entra.microsoft.com) with a Global Administrator account\n2. Navigate to: Identity > Hybrid Management > Microsoft Entra Connect\n3. Under 'Microsoft Entra Connect Sync', select 'Manage'\n4. Disable the sync scheduler or set the sync status to disabled\n5. Confirm the sync status shows as disabled before proceeding\n\nMethod 2: PowerShell via Microsoft Graph SDK:\nConnect-MgGraph -Scopes 'OnPremDirectorySynchronization.ReadWrite.All'\n$syncId = (Get-MgDirectoryOnPremiseSynchronization).Id\nUpdate-MgDirectoryOnPremiseSynchronization -OnPremisesDirectorySynchronizationId $syncId `\n  -Configuration @{ customerRequestedSynchronizationInterval = 'PT0S' } `\n  -Features @{ isSyncEnabled = $false }\nNote: The Graph SDK module must be installed (Install-Module Microsoft.Graph) and the tenant may require a few minutes before the disabled state propagates to dependent services.\n\nMethod 3: Legacy PowerShell via the MSOnline module — use Set-MsolDirSyncEnabled. The MSOnline module is deprecated; Microsoft recommends the Entra admin portal or Graph SDK as preferred alternatives, but this command remains functional in most environments.\n\nWhat this severs (sever all four before any credential rotation):\n1. Active Directory to Entra ID user and group synchronisation\n2. Password hash synchronisation: stops on-prem password changes writing to Entra ID\n3. Pass-through authentication: on-prem AD no longer validates Entra ID sign-ins\n4. Writeback flows: Entra ID password reset, group, and device writebacks to on-prem AD\n\nNOTE: SEE ALSO: This action is a prerequisite for ID 13 (Rotate All Privileged Credentials). If sync is still active when credentials are rotated, the new credentials can be overwritten or read back by the attacker via the still-live sync channel.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 6,
+      "activity": "Deploy EDR",
+      "effectiveness": "Medium",
+      "category": "Visibility",
+      "business_impact": "Low",
+      "notes": "Deploy endpoint detection and response technology to establish visibility across unaffected systems. Open source options are available for forensic triage and live response when a commercial EDR licence is not in place.\n\nWARNING: DEPLOYMENT TARGET — RISK OF TIPPING OFF THE ATTACKER: Do NOT deploy EDR agents to known-compromised or suspected-compromised hosts during an active incident. Installing new software on a compromised host is a visible action — an attacker with administrative access can detect the installation event, terminate the process, or treat the deployment as a confirmed signal they have been detected. This may cause the attacker to immediately accelerate their timeline, triggering encryption or data destruction earlier than planned. This is the \"going loud\" risk: any detectable action on a host the attacker controls may cause them to move faster.\n\nThis warning applies specifically to deploying new agents. It does not apply to using an EDR agent that is already installed and running on a compromised host. If an agent is already present, it is already known to the attacker (or irrelevant to them), and using its network isolation feature to contain the host is the correct and fastest containment action — see ID 4 (Isolate Host).\n\nFor compromised hosts with no EDR agent, the right response is network-level isolation via VLAN reassignment, firewall ACL, cloud security group change, or physical cable pull. Do not delay isolation while attempting to deploy an agent. Isolation takes priority over instrumentation.\n\nDeployment priority order for confirmed-clean systems:\n1. Domain Controllers and authentication infrastructure — highest value for detecting attacker movement through the identity layer\n2. File servers and backup infrastructure — early warning of encryption activity\n3. Administrative workstations and jump servers — common attacker pivot points\n4. General endpoint population — broad visibility sweep after critical assets are covered\n\nNOTE: SEE ALSO: ID 4 (Isolate Host) covers the full isolation decision logic including the distinction between triggering an existing EDR agent versus deploying a new one.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "execution",
+      "ces": 3
+    },
+    {
+      "id": 7,
+      "activity": "DNS Sinkhole",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Low-Medium",
+      "notes": "Configure DNS sinkholing to redirect callback and exfiltration domains used by attacker tools to a controlled IP, preventing those tools from reaching their destinations even if they are already running on internal hosts. When the tool attempts to resolve its domain, it receives your sinkhole IP and the connection fails or is logged.\n\nPriority domains to sinkhole:\n• Remote access and RMM tools: AnyDesk, TeamViewer, ScreenConnect, Action1\n• Exfiltration platforms: MegaSync, pCloud\n\nImplementation options:\n• DNS forwarder or resolver: create a zone override for the target domain pointing to a local sinkhole IP (e.g. 0.0.0.0 or a monitoring host)\n• Firewall DNS filtering: block DNS queries to those domains at the perimeter\n• Managed DNS security platforms: add domains to a custom block list\n\nNOTE: SEE ALSO: ID 9 (Block Executables via AV/EDR) blocks the same tools at the endpoint execution layer. ID 55 (URL Filtering) blocks their download URLs. Use all three together for layered RMM and exfil tool coverage.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "rmm",
+        "exfil"
+      ],
+      "killchain": "execution",
+      "ces": 4
+    },
+    {
+      "id": 8,
+      "activity": "Enable PowerShell and WMI Logging",
+      "effectiveness": "Low",
+      "category": "Visibility",
+      "business_impact": "Low",
+      "notes": "Enable PowerShell script block logging, module logging, and WMI activity logging on endpoints and servers to capture attacker commands and lateral movement activity from this point forward.\n\nPowerShell logging via Group Policy:\nComputer Configuration > Administrative Templates > Windows Components > Windows PowerShell\n• Turn on Script Block Logging: Enabled\n• Turn on Module Logging: Enabled (set module name to * to capture all modules)\nLogged events appear under: Applications and Services Logs > Microsoft > Windows > PowerShell > Operational\n\nWMI activity logging via Group Policy:\nComputer Configuration > Administrative Templates > Windows Components > Windows Management Instrumentation\n• Trace WMI activity: Enabled\nEvents appear under: Applications and Services Logs > Microsoft > Windows > WMI-Activity > Operational\n\nWARNING: Enabling logging at this stage only captures activity from this point forward. All attacker actions taken before logging was enabled are permanently unlogged. Do not rely on PowerShell or WMI logs alone to reconstruct the full attack timeline — assume a visibility gap exists from initial access to the moment logging was activated. Supplement with EDR telemetry, Windows Event logs (4624, 4688, 7045), and network flow data to fill the gap.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "execution",
+      "ces": 2
+    },
+    {
+      "id": 9,
+      "activity": "Block Executables — Sync & RMM Tools (AV or EDR)",
+      "effectiveness": "Medium",
+      "category": "Application Control",
+      "business_impact": "Low-Medium",
+      "notes": "Block known attacker sync, exfiltration, and RMM tools from executing using whatever application control mechanism is available. Filename blocking is fast but bypassable by renaming the binary, hash-based blocking is more reliable but requires the specific binary to generate the hash. Use both where possible.\n\nPriority targets:\n• Exfiltration tools: FileZilla, WinSCP, rclone, MegaSync, pCloud\n• RMM/remote access tools: AnyDesk, Action1, ScreenConnect, Atera, Splashtop, TeamViewer, LogMeIn\n\nMethod 1: AV/EDR block rule (fastest, most available):\nAdd filenames or hashes to your EDR block list. Most EDR consoles allow you to add a SHA-256 hash or process name as a custom block rule. For filename-based blocking, use the exact executable name (e.g., rclone.exe, AnyDesk.exe).\n\nMethod 2: AppLocker deny rule:\nGPO path: Computer Configuration > Windows Settings > Security Settings > Application Control Policies > AppLocker > Executable Rules\nCreate a new Deny rule by: Publisher (certificate-based), Path (folder/filename), or Hash (most reliable). Publisher rules cover all versions signed by the same certificate. Hash rules cover only the specific version hashed.\nAfter creating rules, set enforcement mode to Enforced for all rule collections.\n\nMethod 3: Windows Defender Application Control (WDAC):\nSee ID 10 for certificate-based blocking via WDAC.\n\nWARNING: Filename blocking alone is insufficient, attackers routinely rename tools (e.g., rclone.exe renamed to svchost32.exe). Combine with hash blocking and DNS sinkholing (ID 7) for callback domains as a layered approach.\n\nNOTE: SEE ALSO: ID 7 (DNS Sinkhole) blocks the callback and exfil domains for these same tools at the network layer. ID 55 (URL Filtering) blocks the download URLs. Use all three together for maximum coverage.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "rmm",
+        "exfil"
+      ],
+      "killchain": "execution",
+      "ces": 2
+    },
+    {
+      "id": 10,
+      "activity": "WDAC Certificate-Based Block (Defender)",
+      "effectiveness": "Medium",
+      "category": "Application Control",
+      "business_impact": "Low",
+      "notes": "Windows Defender Application Control (WDAC) can deny execution of any application signed by a specific publisher certificate, blocking all current and future versions signed by that publisher without needing to update hash lists. This is more durable than hash-based blocking but requires more setup.\n\nSteps:\n1. Obtain a sample of the binary to block (e.g., AnyDesk.exe, rclone.exe)\n2. Extract the publisher certificate information using Get-AuthenticodeSignature on the binary. Note the Subject and Issuer fields — these form the PublisherName in the deny rule.\n\n3. Create a WDAC deny policy in XML with a Deny rule referencing the publisher name extracted in step 2. Microsoft's WDAC Wizard tool can generate the XML structure if you prefer a GUI approach.\n\n4. Convert the XML policy to a binary and deploy it via MDM (Intune), Group Policy, or by placing the compiled policy file in the CodeIntegrity folder. Consult Microsoft's WDAC deployment documentation for the current deployment path and method for your OS version.\n\n5. Restart the system or refresh the CI policy to apply the new rule.\n\nWARNING: WDAC in block mode can break legitimate applications if the policy is too broad. Start with audit mode to validate impact before switching to enforce mode. Audit mode logs blocked executions to Event ID 3076 without actually blocking.\n\nWARNING: WDAC policy deployment requires careful testing, a misconfigured policy can prevent the system from booting. Always test on a non-critical system first and maintain a recovery boot option.\n\nNOTE: SEE ALSO: ID 9 (Block Executables via AV or EDR) covers faster but less durable filename and hash-based blocking. ID 54 (ASR Rules) provides complementary execution controls via Defender.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "execution",
+      "ces": 2
+    },
+    {
+      "id": 11,
+      "activity": "Service Accounts — Rotate / Disable",
+      "effectiveness": "Medium",
+      "category": "Identities",
+      "business_impact": "High",
+      "notes": "Rotate, disable, or reduce the privileges of service accounts, accounts used by applications, scheduled tasks, services, and automated processes rather than by humans. Service accounts are a high-value lateral movement target because they often hold elevated privileges, are rarely monitored for interactive logon activity, and their credentials are frequently embedded in scripts or configuration files.\n\nThis action covers service accounts only. For privileged human accounts (Domain Admins, Enterprise Admins, local admins), see ID 13 (Accounts, Rotate All Privileged).\n\nPriority targets:\n• Service accounts with Domain Admin or local admin rights\n• Accounts used by backup, monitoring, or endpoint management tools\n• Accounts integrated with virtualisation platforms (vCenter service accounts)\n• Accounts with permissions to create, modify, or link GPOs\n• Accounts with access to file shares or databases across multiple systems\n\nFor each identified service account:\n1. Determine if the account is actively required during the incident, if not, disable it\n2. If required, rotate the credential to a long, randomly generated password\n3. Remove any privileges that are not strictly necessary for the service to function\n4. Where interactive and network logon are not required, enforce logon restrictions via Group Policy (see ID 43, Service Account Logon Restrictions)\n5. Update all systems, scripts, and configuration files that reference the old credential\n\nWARNING: SEQUENCING DEPENDENCY: Before rotating service account credentials, confirm the following action is complete:\n• ID 60 (Isolate PAM / Password Vault): If the vault is compromised and you rotate service account credentials into it before isolating it, the attacker can re-read the new passwords. Vault isolation must happen first.\n\nNOTE: SEE ALSO: ID 13 (Rotate All Privileged) covers human privileged accounts. ID 43 (Service Account Logon Restrictions) enforces GPO-based logon restrictions to limit where service accounts can authenticate.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump",
+        "dc_access"
+      ],
+      "killchain": "persistence",
+      "ces": 2,
+      "depends_on": [
+        60
+      ]
+    },
+    {
+      "id": 12,
+      "activity": "Limit Local Admin Rights (UAC Token Filtering)",
+      "effectiveness": "Medium",
+      "category": "Access Control",
+      "business_impact": "Low-Medium",
+      "notes": "UAC token filtering restricts local accounts from using their full administrative privileges when authenticating over the network. When a local admin account connects remotely (via SMB, WMI, PsExec), Windows issues a filtered token that strips admin rights, preventing lateral movement even if the attacker holds valid local admin credentials. Domain accounts are not affected by this setting.\n\nRegistry key:\nHKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\nValue name: LocalAccountTokenFilterPolicy\nValue type: REG_DWORD\nValue: 0 (token filtering enabled, restricts remote admin via local accounts)\n\nIf the key does not exist, create it using regedit.exe or via the registry editor of your choice, then add the DWORD value with the name and data specified above.\n\nWARNING: If the value is already set to 1 in your environment (a common misconfiguration), changing it to 0 will immediately restrict remote admin access via local accounts, which is the desired security outcome but may break existing remote management workflows that rely on local admin credentials over the network. Confirm impact before deploying at scale.\n\nWARNING: This setting does not affect domain accounts or the built-in Administrator account (RID 500). For domain account restrictions, see ID 42 (Privileged Account Logon Restrictions).",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 2
+    },
+    {
+      "id": 13,
+      "activity": "Accounts — Rotate All Privileged (Priority Order)",
+      "effectiveness": "High",
+      "category": "Identities",
+      "business_impact": "Medium-High",
+      "notes": "Rotate credentials for all human privileged accounts, accounts held by people with elevated access to systems, infrastructure, and administrative consoles. This is one of the most critical containment actions in ransomware response. An attacker holding valid privileged credentials can undo every other containment measure, re-enter after isolation, modify GPOs, create new accounts, and access backup infrastructure. Credential rotation removes that persistence.\n\nThis action covers human privileged accounts only. For service accounts (application, scheduled task, and automated process accounts), see ID 11 (Service Accounts, Rotate / Disable).\n\nPriority rotation order:\n1. Domain Admin and Enterprise Admin accounts\n2. Schema Admin accounts\n3. All accounts with permissions to create, modify, or link GPOs\n4. Local Administrator accounts on all domain-joined systems, use LAPS or equivalent to randomise and manage these at scale\n5. Accounts with privileged access to virtualisation platforms (vCenter, ESXi)\n6. Accounts with privileged access to backup infrastructure\n7. All remaining accounts with local admin rights on any system\n\nFor each rotated account:\n• Use a long, randomly generated password: minimum 25 characters\n• Do not reuse any password from the pre-incident environment\n• Do not store new passwords in the existing PAM vault or password manager until full containment is confirmed, use out-of-band secure storage\n• Disable any account where rotation is not immediately possible rather than leaving the old credential active\n\nWARNING: SEQUENCING DEPENDENCY: Before rotating credentials, confirm the following actions are complete:\n• ID 60 (Isolate PAM / Password Vault): If the vault is compromised and you rotate credentials into it before isolating it, the attacker can re-read the new passwords. Vault isolation must happen first.\n• ID 30 (Use Local Accounts): Do NOT store rotated passwords in the vault or password manager during the incident. Use local accounts and out-of-band secure storage for new credentials until full containment is confirmed.\n• ID 5 (Disable AD-Entra Sync: if applicable): If AD-to-Entra sync is still running when on-premises credentials are rotated, the compromised on-prem AD can push dirty password hashes back into Entra ID and nullify the reset. Cut the sync first if both on-prem AD and Entra/SaaS are in scope.\n\nNOTE: SEE ALSO: ID 11 (Service Accounts) covers non-human accounts.\nID 29 (Privileged Account Password Rotations) is the parallel sweep for this action — it handles accounts not yet reached by this priority order and any account where rotation must be deferred. Run ID 13 and ID 29 in parallel: this action (ID 13) drives the priority sequence, ID 29 handles the remainder and the deferrals. ID 70 (Disable Compromised User Accounts) covers standard user accounts confirmed as compromised — run alongside this action.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3,
+      "depends_on": [
+        60,
+        30,
+        5
+      ]
+    },
+    {
+      "id": 14,
+      "activity": "Disable File Shares",
+      "effectiveness": "Medium-High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium-High",
+      "notes": "Administrative shares (C$, ADMIN$, D$, IPC$) are used by ransomware operators for lateral movement: binding to remote systems, copying encryptors to target hosts, and executing payloads remotely via PsExec or direct SMB access. Disabling them removes that remote access and execution channel.\n\nFastest method — stop the Server service (immediate effect, no reboot required):\nOpen Services (services.msc) or run: net stop server\nThis disables all administrative and file sharing on the system immediately. It is the fastest containment option but also the broadest — it removes access to all shares including legitimate ones. Confirm operational dependencies before applying to servers.\n\nFor all other methods (registry, Group Policy via MSS Legacy template, restoration procedure) and the full Domain Controller impact warning, see ID 40 (Disable Administrative / Hidden Shares), which is the complete reference for this action.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 2
+    },
+    {
+      "id": 15,
+      "activity": "Implement Egress Filtering Rules",
+      "effectiveness": "Medium-High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium",
+      "notes": "Block outbound traffic on ports commonly used by attacker tools for C2 callbacks and data exfiltration. Egress filtering at the perimeter firewall or proxy stops attacker-controlled binaries from phoning home even if they are already running on internal hosts.\n\nPriority ports to block outbound:\n• C2 framework defaults: TCP 4444, 4445 (Metasploit), TCP 1337, 8443, 9001\n• Cobalt Strike default: TCP 80, 443, 8080 (blends with web traffic, use proxy inspection or TLS inspection to catch)\n• File transfer tools: TCP 21 (FTP), TCP 22 (SFTP/SCP if not needed), TCP 2049 (NFS)\n• Legitimate-but-abused: restrict outbound TCP 443 from servers using allowlists where possible, after validating dependencies. Servers with no business reason to initiate HTTPS (file servers, DCs, backup agents) should have outbound 443 blocked by default with explicit exceptions for required destinations only — not a blanket block applied before dependencies are confirmed\n\nWARNING: Before blocking TCP 443 from servers, build an explicit allow list for every legitimate outbound HTTPS dependency. Exceptions that must be carved out before applying the block:\n• EDR and security tooling: EDR agents and other security tools communicate over TCP 443 to their cloud management consoles. Blocking this severs the EDR management channel and will disable remote isolation, forensic collection, and real-time detection on those hosts.\n• Patch and update services: WSUS, SCCM/Intune endpoints, OS update URLs (windowsupdate.microsoft.com, etc.) — blocking these prevents security patches from applying during the incident.\n• Backup agents: most backup platform agents use TCP 443 to reach cloud backup targets or management servers.\n• Certificate validation and OCSP: servers performing TLS handshakes may need outbound TCP 443 to reach certificate authority OCSP responders.\n• Any business-critical SaaS integration running on that server.\n\nThe correct approach is default-deny with explicit allow rules per destination IP or FQDN, not a blanket block. Apply the deny rule last, after the allow rules are confirmed and tested on one server before rolling out at scale.\n\nApply at the perimeter firewall for all internal subnets, and at a proxy or web gateway for user endpoints. For servers specifically, a default-deny-outbound policy with explicit allow rules for known destinations is the most effective posture.\n\nNOTE: SEE ALSO: ID 7 (DNS Sinkhole) blocks the callback domains. ID 59 (Block Outbound from Windows Binaries) applies application-layer outbound blocking on endpoints.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "exfil"
+      ],
+      "killchain": "collection",
+      "ces": 3
+    },
+    {
+      "id": 16,
+      "activity": "Apply Local Host Firewall Rules (Windows Firewall)",
+      "effectiveness": "Medium-High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium-High",
+      "notes": "Helps prevent lateral movement on endpoints. Apply the following Windows Firewall rules per host using the Windows Firewall with Advanced Security console or via netsh/PowerShell:\n\nPort-based blocks (inbound and outbound):\n• SMB: TCP/445, TCP/139, TCP/135\n• RDP: TCP/3389\n\nApplication-based block (outbound):\n• bitsadmin.exe: block via Windows Firewall outbound application rule, not a port rule. bitsadmin is a Windows command-line tool used to abuse the Background Intelligent Transfer Service for downloading attacker payloads. To block it: Windows Firewall with Advanced Security > Outbound Rules > New Rule > Program > path to bitsadmin.exe > Block. Alternatively, see ID 59 (Block Outbound Connections from Specific Windows Binaries) which covers bitsadmin.exe alongside other high-risk binaries.\n\nNOTE: SEE ALSO: ID 38 (Restrict Lateral Movement from Endpoints) covers the same SMB/RDP ports via GPO-enforced rules, which scale across the domain automatically. If GPO deployment is available, prefer ID 38 for domain-wide coverage. Use this action (ID 16) for manual/per-host enforcement on specific systems where GPO cannot be applied quickly enough.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "rdp"
+      ],
+      "killchain": "lateral",
+      "ces": 2
+    },
+    {
+      "id": 17,
+      "activity": "Block Named Executables Using IFEO",
+      "effectiveness": "Medium",
+      "category": "Application Control",
+      "business_impact": "Low",
+      "notes": "Image File Execution Options (IFEO) is a Windows registry mechanism that allows you to redirect the execution of a named binary to a different program, or to a non-existent path, which effectively prevents the target executable from launching. During an incident, this can be used to immediately block specific attacker tools on Domain Controllers or critical assets without requiring EDR, AppLocker, or WDAC to be already deployed.\n\nThis technique is particularly effective for blocking PsExec-based lateral movement on Domain Controllers, where psexesvc.exe is the server-side component that must execute for PsExec to work remotely.\n\nRegistry path:\nHKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\\\<executable name>\n\nCreate a new key named after the executable to block, then add a string value:\nValue name: Debugger\nValue type: REG_SZ\nValue data: C:\\Windows\\System32\\svchost.exe\n(or any non-existent path, the executable will fail to launch)\n\nRegistry editor (manual):\n1. Open regedit.exe\n2. Navigate to: HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\n3. Right-click > New > Key: name it after the executable (e.g., psexesvc.exe)\n4. Inside the new key: Right-click > New > String Value, name it 'Debugger'\n5. Set the value to any non-existent path (e.g., C:\\block\\block.exe)\n\nPriority targets during ransomware IR:\n• psexesvc.exe: blocks PsExec server-side component on DCs and servers\n• wmic.exe: blocks WMI command-line tool used for lateral movement\n• mshta.exe: blocks HTML application host used for script execution\n• wscript.exe: blocks Windows Script Host (VBScript/JScript)\n• cscript.exe: blocks command-line script host\n\nTo remove a block (restore normal execution):\nDelete the registry key for the executable, or remove the Debugger value.\n\nWARNING: Apply selectively to specific assets where the tool is not legitimately used. Blocking wmic.exe or wscript.exe domain-wide can break management scripts and monitoring agents that depend on these binaries. Test on one system before pushing via remote registry or GPO at scale.\n\nNOTE: SEE ALSO, ID 54 (Attack Surface Reduction Rules) and ID 59 (Block Outbound Connections from Specific Windows Binaries) provide complementary application control coverage through Defender ASR and Windows Firewall outbound rules respectively.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access"
+      ],
+      "killchain": "persistence",
+      "ces": 2
+    },
+    {
+      "id": 18,
+      "activity": "Collect & Preserve TA Logs / Tools",
+      "effectiveness": "Medium-High",
+      "category": "Evidence & Intelligence",
+      "business_impact": "Low",
+      "notes": "Collect and preserve attacker tool artefacts and on-premises log sources before they are purged, overwritten, or lost. Ransomware operators routinely clear Windows Event Logs and application logs as part of anti-forensic activity.\n\nAttacker tool logs:\nCollect application logs from any identified attacker tools before the host is remediated. Priority sources:\n• Sync and exfil tools: connection logs and file transfer history\n• RMM tools: session logs and command history\n• C2 framework artefacts: staged binaries and configuration files\n\nProvide collected artefacts to your legal team — depending on jurisdiction you may be able to request takedowns or preserve data for law enforcement referral.\n\nNOTE: SEE ALSO: ID 52 (SaaS Compromise — Visibility and Log Ingestion) covers cloud and SaaS audit log collection and review, including M365 UAL, Entra ID sign-in logs, AWS CloudTrail, and GCP Audit Logs.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "rmm",
+        "exfil"
+      ],
+      "killchain": "collection",
+      "ces": 3
+    },
+    {
+      "id": 19,
+      "activity": "Unmount the LUN/Datastore from ESXi Cluster",
+      "effectiveness": "High",
+      "category": "Virtualization",
+      "business_impact": "High",
+      "notes": "Unmount LUNs or datastores from the ESXi cluster to protect unencrypted VMDKs from being reached by ransomware processes running on the host. Once a datastore is unmounted at the ESXi layer, the VMs stored on it become inaccessible to any process on that host, including an active encryptor.\n\nHow to unmount a datastore:\nVia vSphere Client: select the ESXi host > Configure > Storage > Datastores > select the datastore > right-click > Unmount. Repeat for all datastores on affected hosts.\nVia vCenter: Storage view > right-click the datastore > Unmount Datastore > select the affected hosts.\n\nWARNING: Do NOT reboot or shut down VMs before unmounting. Active ransomware processes on a running VM cannot modify files currently locked by the OS. That protection does not survive a reboot — some ransomware variants schedule encryption to run on next startup, delete Volume Shadow Copies, bypass VSS writers, or use a restart-based encryption sequence. A reboot hands the attacker the opportunity to complete what the lock prevented. Leave VMs running and unmount the datastore at the ESXi layer.\n\nWARNING: Do not restore VMs from a compromised ESXi cluster until malicious processes have been identified and remediated on the host.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "impact",
+      "ces": 3
+    },
+    {
+      "id": 20,
+      "activity": "Restrict Access to ESXi Hosts",
+      "effectiveness": "Medium-High",
+      "category": "Virtualization",
+      "business_impact": "Low",
+      "notes": "Limit which systems and accounts can reach ESXi hosts and vCenter. Unrestricted access to the management plane is the primary reason ransomware operators can encrypt VMDKs at scale, once they reach vCenter they can target all VMs at once.\n\nImmediate steps:\n1. Apply a host-based firewall rule on each ESXi host to allow management traffic only from specific admin IP ranges (jump servers, bastion hosts, PAWs). Use the ESXi host firewall settings in the vSphere Client or the ESXCLI network firewall commands — consult VMware documentation for current syntax.\n2. At the network layer, restrict access to vCenter (port 443) and ESXi hosts (ports 443, 902) via firewall ACL to approved source IPs only\n3. Disable any direct AD/LDAP authentication integration and switch to local accounts (see ID 25 and ID 30)\n\nWARNING: Confirm which management systems legitimately need ESXi/vCenter access before applying IP restrictions, locking yourself out of vCenter during an active incident removes your ability to unmount datastores (ID 19) or enable lockdown mode (ID 22).",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 21,
+      "activity": "Ensure SSH Access to ESXi is Disabled",
+      "effectiveness": "Medium-High",
+      "category": "Virtualization",
+      "business_impact": "Low",
+      "notes": "Disable SSH on ESXi hosts to remove direct shell access. SSH on ESXi provides root-level command execution and is a primary attack path once an attacker has ESXi credentials. It is enabled for admin convenience and is frequently left on.\n\nVia vSphere Client:\n1. Select the ESXi host > Configure > System > Services\n2. Select SSH > Stop, then set Startup Policy to 'Start and stop manually'\n3. Repeat for ESXi Shell if enabled\n\nWARNING: Disabling SSH does not terminate active SSH sessions already in progress. If an attacker is connected via SSH, disabling the service will prevent new connections but the existing session remains live until disconnected. Check for active SSH sessions before disabling by reviewing the ESXi host's network connections via the vSphere Client or the ESXCLI network connection list command. If an active session is found, terminate it before disabling the service.\n\nNOTE: SEE ALSO: ID 22 (ESXi Lockdown Mode) should be applied alongside SSH disable for layered access restriction.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 22,
+      "activity": "Enable Normal Lockdown Mode (ESXi)",
+      "effectiveness": "Medium-High",
+      "category": "Virtualization",
+      "business_impact": "Medium-High",
+      "notes": "Lockdown Mode restricts direct access to ESXi hosts, requiring all management operations to go through vCenter Server. This reduces the attack surface against direct host-level access by removing SSH, ESXi Shell, and — in Strict mode — DCUI as direct management paths.\n\nNormal Lockdown Mode (what this action enables) disables SSH and ESXi Shell access for all accounts except those explicitly listed in the DCUI Access exception list. The DCUI itself remains available to accounts on that exception list, preserving a local emergency recovery path. Accounts NOT in the DCUI Access list, including root by default when lockdown is enabled, cannot use DCUI interactively. Strict Lockdown Mode additionally disables DCUI for all accounts without exception.\n\nEnable via vSphere Client (Host UI):\n1. Select the ESXi host in the vSphere Client inventory\n2. Navigate to: Configure > System > Security Profile\n3. Under Lockdown Mode, click Edit\n4. Select Normal (restricts direct host access, vCenter management still works)\n5. Click OK\n\nEnable via ESXCLI: use the vim-cmd hostsvc/enable_lockdown command from a host shell or via SSH before SSH is disabled. Confirm the command in current VMware documentation as the syntax may vary by ESXi version.\n\nNormal vs Strict Lockdown:\n• Normal (this action): SSH and ESXi Shell are disabled. DCUI remains available to accounts on the DCUI Access exception list only — root is not on this list by default once lockdown is enabled. Recommended for incident response because it preserves a controlled local recovery path.\n• Strict: DCUI is fully disabled for all accounts without exception. Use only if vCenter is confirmed accessible and an out-of-band recovery method exists. Do not use Strict mode if you may need emergency local console access.\n\nWARNING: Enabling Lockdown Mode will disconnect any existing direct ESXi Shell or SSH sessions. Confirm vCenter connectivity before enabling, if vCenter is also compromised or unavailable, Lockdown Mode will leave the host unmanageable.\n\nReference: https://kb.vmware.com/s/article/1008077\n\nNOTE: SEE ALSO: ID 21 (Disable SSH on ESXi) should be applied alongside Lockdown Mode for layered access restriction.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 2
+    },
+    {
+      "id": 23,
+      "activity": "Enable execInstalledOnly Option (ESXi)",
+      "effectiveness": "High",
+      "category": "Virtualization",
+      "business_impact": "High",
+      "notes": "Enable the execInstalledOnly advanced configuration option on ESXi hosts to restrict execution to binaries installed as part of the ESXi image. This prevents attacker-dropped tools and encryptors from running directly on the ESXi shell, even if the attacker has obtained root access.\n\nWARNING: POST-FORENSICS STEP ONLY — SEQUENCING DEPENDENCY. Do not apply this action until after all forensic memory captures and disk snapshots are complete AND ID 19 (Unmount LUN/Datastore) has been executed. Two separate risks must be managed:\n1. The required host reboot will destroy volatile memory evidence — running processes, active network connections, and encryption keys held in RAM. All forensic collection must be complete before rebooting.\n2. execInstalledOnly only blocks new tool drops — a ransomware process already running retains full write access to any mounted VMDK and can continue encrypting. Unmounting the datastore (ID 19) is what actually stops active encryption. This setting provides defence-in-depth after the datastores are protected and forensic collection is complete.\nIf either condition is not yet met, rely on ID 19 alone to protect VMDKs without triggering a reboot.\n\nEnable via vSphere Client:\nSelect the ESXi host > Configure > System > Advanced System Settings > search for VMkernel.Boot.execInstalledOnly > set to True.\n\nOnly reboot to activate the setting after all of the following are confirmed:\n1. All forensic memory captures from the ESXi host are complete\n2. All disk snapshots or VMDK images required for evidence are taken\n3. ID 19 (Unmount LUN/Datastore) has been executed to protect active VMs\n4. The decision to reboot has been confirmed with the IR lead\n\nReference: VMware vSphere Security Configuration Guide, VMkernel.Boot.execInstalledOnly.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "impact",
+      "ces": 3,
+      "depends_on": [
+        19
+      ]
+    },
+    {
+      "id": 24,
+      "activity": "Enforce MFA on ESXi Access",
+      "effectiveness": "High",
+      "category": "Virtualization",
+      "business_impact": "High",
+      "notes": "Require multi-factor authentication for all access to ESXi hosts and vCenter. Default ESXi and vCenter deployments use single-factor authentication, a compromised password is sufficient for full administrative access.\n\nESXi does not natively support MFA. Enforcement requires one of:\n\nOption 1: vCenter with external identity provider (recommended):\nConfigure vCenter to authenticate via an external IdP (Okta, Entra ID, ADFS) using SAML. The IdP enforces MFA before issuing a token to vCenter. Path: vCenter > Administration > Single Sign On > Configuration > Identity Provider\n\nOption 2: Smart card / PIV authentication:\nvCenter supports smart card authentication via the vSphere Client. Requires PKI infrastructure and is most common in government/regulated environments.\n\nOption 3: Jump server with MFA as the access gateway:\nIf native MFA on vCenter is not deployable during the incident, restrict all vCenter access to a single hardened jump server that itself requires MFA. Combined with IP restriction (ID 20), this enforces MFA at the perimeter.\n\nWARNING: During an active incident, native IdP integration is unlikely to be deployable in time. Option 3 (MFA-gated jump server) is the fastest available control. Prioritise ID 20 (restrict ESXi access by IP) and ID 25 (sever AD integration) alongside this action.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 25,
+      "activity": "Harden Virtualization Credentials",
+      "effectiveness": "High",
+      "category": "Virtualization",
+      "business_impact": "High",
+      "notes": "Remove Active Directory and LDAP authentication integrations from vCenter and ESXi hosts, then switch to local accounts for all virtualisation management access. When AD integration is active, an attacker with domain admin credentials can authenticate directly to vCenter — removing the integration severs that path.\n\nSteps:\n1. In vCenter, navigate to Administration > Single Sign On > Configuration > Identity Sources. Remove the Active Directory or LDAP identity source.\n2. Confirm at least one local vCenter administrator account exists and the password is known before removing the AD integration — you must have a working local account to retain management access.\n3. Switch all ongoing vCenter operations to the local account.\n4. Apply the same principle to all other AD-integrated infrastructure platforms: backup systems, network management consoles, and PAM solutions (see ID 30).\n\nWARNING: SEQUENCING DEPENDENCY: Complete ID 30 (Use Local Accounts for Administrative Access) before this action. If AD integration is severed before local accounts are confirmed and accessible, you risk losing all administrative access to vCenter during the incident.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "vmware",
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3,
+      "depends_on": [
+        30
+      ]
+    },
+    {
+      "id": 26,
+      "activity": "Enable Logging at Virtualization Layer",
+      "effectiveness": "Low",
+      "category": "Virtualization",
+      "business_impact": "Low",
+      "notes": "Ensuring the virtualisation platform forwards logs to your SIEM or centralised logging platform is a prerequisite for detecting attacker activity in the ESXi/vCenter layer. Without it, authentication attempts, configuration changes, and suspicious VM operations are invisible.\n\nWhat to capture:\n• Authentication events (successful and failed logins to vCenter and ESXi hosts)\n• Authorisation events (privilege escalation, role assignment changes)\n• Configuration changes (VM creation/deletion, network changes, snapshot operations)\n• Administrative actions (user account creation, permission modifications)\n\nConfigure syslog forwarding from ESXi to your SIEM:\nVia vSphere Client:\n1. Select the ESXi host > Configure > System > Advanced System Settings\n2. Search for Syslog.global.logHost\n3. Set value to: udp://<SIEM-IP>:514 or tcp://<SIEM-IP>:1514\n4. Apply and restart the syslog service using the ESXCLI syslog reload command or via the vSphere Client service restart option.\n\nConfigure vCenter audit logging:\nvCenter Server > Administration > Syslog Configuration\nAdd your SIEM as a syslog target. vCenter audit events include all API calls, UI actions, and configuration changes.\n\nWARNING: Enabling logging at this stage only captures activity from this point forward. All attacker actions before logging was configured are unrecorded. Do not rely solely on vCenter/ESXi logs to reconstruct the full attack timeline, supplement with network flow data and any EDR telemetry available.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [
+        "vmware",
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "execution",
+      "ces": 1
+    },
+    {
+      "id": 27,
+      "activity": "Vpxuser Account — Shorten Expiry",
+      "effectiveness": "High",
+      "category": "Virtualization",
+      "business_impact": "Medium-High",
+      "notes": "Shorten the vpxuser password expiry interval in vCenter to reduce the window of exposure if the credential is captured. The vpxuser account is the automated service account vCenter uses to authenticate to each ESXi host. Its default password expiry is 30 days — shortening this forces more frequent automatic rotation.\n\nShorten the expiry in vCenter:\nThe navigation path for the password policy setting varies by vSphere version:\n• vSphere 6.x / 7.x: vCenter > Administration > Single Sign On > Configuration > Local Accounts > Password policy\n• vSphere 8.x: vCenter > Administration > Single Sign On > Configuration > Password Policy (the Local Accounts submenu was reorganised in vSphere 8.0)\nIn both versions, locate the maximum password lifetime setting and reduce it from the default 30 days to a shorter interval (e.g. 24 hours). vCenter automatically rotates the vpxuser password on each ESXi host according to this schedule. Confirm the current path in VMware documentation for your deployed version.\n\nOn ESXi 8.0 and later, the vpxuser account can also be restricted from interactive shell access via the host's advanced security settings.\n\nWARNING: Do NOT manually reset the vpxuser password. Manual resets break the trust relationship between vCenter and the ESXi host and cause vCenter to lose the ability to manage that host. Password rotation must be performed exclusively through vCenter's automatic rotation mechanism.",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "vmware"
+      ],
+      "ta": [],
+      "killchain": "persistence",
+      "ces": 3
+    },
+    {
+      "id": 28,
+      "activity": "Privileged Account Identification and Reduction",
+      "effectiveness": "High",
+      "category": "Privilege Account Management",
+      "business_impact": "Medium-High",
+      "notes": "Identify all privileged accounts in the environment and reduce both their number and scope of access. Attackers depend on over-privileged accounts to move laterally and escalate — reducing the number of accounts with Domain Admin, local admin, and GPO modification rights limits the damage any single compromised credential can cause.\n\nAccounts to identify and review:\n• Accounts assigned default privileged AD roles (Domain Admins, Enterprise Admins, Schema Admins)\n• Accounts with permissions to create, modify, or link GPOs\n• Accounts with explicit permissions on Domain Controllers\n• Accounts assigned privileged roles on virtualisation platforms\n• Accounts with local administrative access across a large scope of endpoints\n\nReduction steps:\n1. Remove any account from privileged groups where the access is not operationally required\n2. Restrict service accounts to the minimum permissions required for their function\n3. Enforce logon restrictions via Group Policy for service accounts that do not require interactive or remote logon:\nComputer Configuration > Policies > Windows Settings > Security Settings > Local Policies > User Rights Assignment\n• Deny log on locally (SeDenyInteractiveLogonRight)\n• Deny log on through Remote Desktop Services (SeDenyRemoteInteractiveLogonRight)\n4. For service accounts used on a single system, restrict them to that system via Active Directory Users and Computers > Account tab > Log On To\n\nNOTE: SEE ALSO: ID 42 (Privileged Account Logon Restrictions) and ID 43 (Service Account Logon Restrictions) enforce GPO-based logon restrictions for accounts identified here.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3
+    },
+    {
+      "id": 29,
+      "activity": "Privileged Account Password Rotations",
+      "effectiveness": "High",
+      "category": "Privilege Account Management",
+      "business_impact": "High",
+      "notes": "Rotate credentials for all privileged accounts. Execute this action in parallel with ID 13 (Accounts — Rotate All Privileged Priority Order), which drives the priority sequence from Domain Admins downward. This action covers the accounts not yet reached by ID 13's priority order and any account where immediate rotation is not possible. Together they cover the full privileged account population — run both concurrently with separate responders where possible, not as alternatives.\n\nScope for this action:\n• Accounts in ID 13's priority list where rotation is blocked or delayed (system dependencies, change window constraints, missing credentials) — disable these accounts temporarily while waiting to rotate them\n• Accounts not covered in ID 13's 7-level order but that carry elevated permissions in specific systems or platforms\n• Any account where rotation cannot be completed immediately — disable it rather than leaving the old credential active\n\nApply the same rotation rules as ID 13: minimum 25 characters, no reuse, out-of-band storage only.\n\nThe same sequencing dependencies apply as ID 13 — complete ID 60 (Isolate PAM), ID 30 (Use Local Accounts), and ID 5 (Disable AD-Entra Sync) before rotating any credentials. See ID 13 for the full dependency explanation.\n\nNOTE: SEE ALSO: ID 13 (Accounts — Rotate All Privileged Priority Order) drives the main rotation sequence — this action fills in what ID 13 defers or cannot reach immediately. ID 11 (Service Accounts) covers non-human accounts.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump",
+        "dc_access"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3,
+      "depends_on": [
+        60,
+        30,
+        5
+      ]
+    },
+    {
+      "id": 30,
+      "activity": "Use Local Accounts for Administrative Access",
+      "effectiveness": "Medium-High",
+      "category": "Access Control",
+      "business_impact": "Medium-High",
+      "notes": "Switch all infrastructure management access to local administrator accounts and sever Active Directory integrations from critical platforms. When AD is compromised, any platform using AD for authentication inherits that compromise. Removing the integration forces the attacker to find alternative credentials for each platform independently.\n\nIntegrations to sever immediately:\n1. VMware vCenter: Administration > Single Sign On > Configuration > Identity Sources — remove the AD identity source and switch to the local vCenter administrator account\n2. PAM / Password vault: disable AD integration in the PAM console and switch to local PAM service accounts\n3. Backup solution: remove AD-authenticated admin accounts from the backup console and use local backup admin credentials\n4. Cloud IAM: review and remove AD-federated roles from AWS, Azure, or GCP where the federation trust can be abused via the compromised AD\n\nConfirm a working local administrator account exists on each platform before severing the AD integration — access to the platform must not be lost during the response.\n\nLocal accounts must use long randomly generated passwords not stored in the compromised vault, have MFA enforced where supported, and be limited to the minimum two accounts needed for operational resilience.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad",
+        "vmware",
+        "cloud",
+        "saas",
+        "federated"
+      ],
+      "ta": [],
+      "killchain": "privilege_esc",
+      "ces": 2
+    },
+    {
+      "id": 31,
+      "activity": "Identify and Harden Single-Factor Authentication Access Methods",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Medium-High",
+      "notes": "Audit all externally accessible platforms for single-factor authentication and enforce MFA across all of them. Where MFA cannot be enforced immediately, restrict external access to a small set of trusted IP ranges as a temporary control.\n\nPlatforms to audit and harden:\n• VPN and remote access gateways\n• Virtual Desktop Infrastructure (VDI)\n• Cloud management consoles (AWS, Azure, GCP)\n• SaaS administrative consoles\n• Identity providers and SSO portals\n\nFor incidents involving vishing, MFA manipulation, or social engineering, standard push notification and SMS MFA are insufficient — these are bypassed via MFA fatigue attacks or SIM swapping. Escalate to phishing-resistant MFA for all privileged and administrative accounts:\n• Remove SMS, phone call, push notification, and email as accepted authentication factors for admin accounts\n• Require FIDO2 security keys or passkeys for all accounts with privileged roles\n• For standard users: require authenticator apps with FIDO2 or passkey support\n• Enforce multi-context criteria in Conditional Access: validate identity AND device compliance AND known egress location as part of every authentication decision\n• Okta: require phishing-resistant authenticator policy for admin console access\n• Entra ID: Conditional Access policy requiring phishing-resistant MFA strength for privileged roles\n• Google Workspace: enforce Advanced Protection for high-risk users and require security keys for 2SV",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [],
+      "ta": [
+        "rdp"
+      ],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 32,
+      "activity": "Harden Password Reset Processes",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Medium-High",
+      "notes": "Use when a compromise is suspected but social engineering of the help desk or active SSPR abuse has not yet been confirmed. This is the measured version, validate and harden the process without fully locking it down.\n\nActions:\n• Temporarily disable or add friction to external self-service password reset methods\n• Require positive identity verification before any account change\n• Implement out-of-band verification (callback to registered number) for high-risk changes\n• Exclude privileged accounts from self-service password reset tools\n• Monitor for Event ID 4723 (user-initiated reset) and 4724 (admin-initiated reset) in Active Directory\n• For Entra ID: monitor 'Reset password (self-service)' and 'Reset password (by admin)' audit events\n\nWARNING: If social engineering or active SSPR abuse is confirmed or suspected, escalate immediately to ID 61 (Lock External SSPR and Harden Help Desk Verification), that is the emergency version of this action.",
+      "phases": [
+        "initial_access"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3
+    },
+    {
+      "id": 33,
+      "activity": "Review / Restrict MFA Device Self-Registration Processes",
+      "effectiveness": "Medium-High",
+      "category": "Access Control",
+      "business_impact": "Medium",
+      "notes": "Review and validate security controls for MFA device registrations and modifications. Prevents attackers from registering their own MFA devices to maintain persistence.\n\nALERT: ACTIVE INCIDENT: PAUSE ENROLLMENT IMMEDIATELY:\nDuring an active incident involving vishing or MFA manipulation, do not just review, temporarily DISABLE the ability for users to self-register or enroll new devices entirely:\n• Okta: Disable self-service MFA enrollment in Security > Authenticators > Enrollment policy, set to admin-only enrollment\n• Entra ID: Restrict MFA registration under Authentication Methods > Registration campaign, require admin initiation only\n• Google Workspace: Disable end-user self-enrollment of 2SV methods in Admin Console > Security > 2-Step Verification\n• Apply this to ALL users immediately: communicate to end users that MFA changes must be requested via a verified helpdesk channel\n• Log every MFA registration event during the incident window and treat any new enrollment as a high-priority alert requiring investigation\n• Do NOT re-enable self-service enrollment until the identity provider is confirmed clean and all attacker-registered devices have been removed",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3
+    },
+    {
+      "id": 34,
+      "activity": "Attack Surface Management Check",
+      "effectiveness": "Low-Medium",
+      "category": "Visibility",
+      "business_impact": "Low",
+      "notes": "Scanning your external attack surface during an active incident can quickly surface the likely initial access vector, an exposed RDP port, an unpatched VPN appliance, an internet-facing Citrix instance, or a misconfigured management console. This information directly informs which containment actions to prioritise.\n\nQuick scan using an external attack surface management tool or a free internet scanning service (no account required for basic searches):\n1. Search for your organisation's public IP ranges or primary domain using your organisation name or CIDR ranges as search terms.\n\n2. Filter results for high-risk services:\n • RDP: port 3389, if exposed, cross-reference with ID 39\n • SMB: port 445, direct internet exposure is a mass-propagation risk\n • VPN appliances: port 443, 4443, 10443, check for known CVEs on the detected product version\n • Citrix/VDI: port 443 with Citrix headers, cross-reference with ID 57\n • ESXi/vCenter: port 443, 902, 9443, cross-reference with ID 20 and ID 21\n • Remote management consoles (iDRAC, iLO, IPMI): ports 623, 443, 80\n\n3. For any exposed service on an unpatched appliance, check the vendor's CVE list for the detected version, recently disclosed critical CVEs on internet-facing appliances are the most common initial access vector across all major ransomware groups.\n\nWARNING: This is a visibility action, not a containment action. The information it produces should immediately feed into decisions about which isolation, patching, or restriction actions to prioritise, it has no direct containment value on its own.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [],
+      "ta": [
+        "unknown"
+      ],
+      "killchain": "recon",
+      "ces": 1
+    },
+    {
+      "id": 35,
+      "activity": "Sever Site-to-Site Integrations",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "High",
+      "notes": "Disconnect network links between the compromised environment and other sites, data centres, and cloud environments to prevent ransomware from spreading across boundaries. Ransomware operators routinely pivot from an on-premises breach into connected cloud environments and remote offices via these trusted links.\n\nCommon integration types to review and sever:\n• IPsec/VPN tunnels to remote offices and data centres, disable on the firewall or VPN concentrator\n• AWS Direct Connect / Azure ExpressRoute / GCP Cloud Interconnect, disable the virtual interface or circuit at the cloud portal\n• SD-WAN fabric: isolate the affected site via the SD-WAN management console\n• BGP peering: withdraw routes to/from the affected segment at the core router\n• Cloud VPC peering: remove the peering association in the cloud console\n\nWARNING: Severing site-to-site links will cut off remote users and connected offices. Confirm with business leadership before executing. Prioritise cutting links toward unaffected environments, it is better to isolate the compromised site than to allow the spread to clean infrastructure.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 36,
+      "activity": "Restrict or Shutdown Virtual Private Network (VPN)",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium-High",
+      "notes": "Immediately restrict VPN access to a named list of essential users only, do not leave VPN open to the broad user population during an active incident.\n\nStep 1: Build the critical users list:\nConvene a rapid decision with IT leadership, IR lead, and business leadership. The default list is: IR team members, SOC analysts, key IT infrastructure staff (network, identity, backup), and any executives or legal/finance roles with operational necessity during the incident. Document every name and business justification, this list is your audit trail.\n\nStep 2: Apply the restriction technically:\n• Create or update an AD/Entra group (e.g., VPN-IR-Approved) containing only the listed users\n• Update the VPN policy (firewall rule, NAC policy, or IdP Conditional Access) to allow VPN authentication only for members of that group\n• Block or disable VPN profiles/connections for all other users immediately\n• If the VPN uses RADIUS or LDAP for authentication, update the group filter at the authentication server\n\nStep 3: Terminate existing active sessions:\nDo not only block new connections, actively terminate all currently connected VPN sessions for users not on the approved list. Attackers with valid credentials may already be connected. Check your VPN console for active session management.\n\nStep 4: Enforce phishing-resistant MFA for all retained VPN users:\nAll users on the approved list must authenticate using MFA before VPN access is granted. For incidents involving vishing or social engineering:\n• Remove SMS and push notification as accepted MFA factors for VPN, these are bypassable via social engineering\n• Require FIDO2 / hardware token or certificate-based authentication where possible\n• If phishing-resistant MFA is not available, require a separate out-of-band verification step before granting access\n\nStep 5: Block non-compliant and unmanaged devices:\nRestrict VPN access to managed, compliant devices only. An attacker with stolen credentials connecting from their own device bypasses this control entirely if device compliance is not enforced. Use Conditional Access policies, device posture checks from your NAC or MDM solution, or certificate-based authentication to enforce managed-device-only access.\n\nStep 6: Review the list regularly during the incident:\nReassess the approved user list at every shift change. Remove users who no longer require remote access. Tighten to shutdown if the situation escalates to active encryption.\n\nWARNING: If Block ALL Traffic (ID 37) is executed, this action is superseded, VPN traffic is included in the all-traffic block. Do not maintain this list in parallel with ID 37.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "rdp"
+      ],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 37,
+      "activity": "Consider Blocking ALL Traffic",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "High",
+      "notes": "WARNING: HIGH IMPACT: This action accepts the full business disruption of cutting all connectivity in exchange for stopping active exfiltration or encryption. All user access will be severed. Confirm with business leadership before executing. An alternative with lower impact is to block all OUTBOUND traffic only, which stops exfiltration and C2 callbacks while preserving inbound access for recovery teams.\n\nOnly appropriate when:\n• Exfiltration is actively ongoing and cannot be stopped by targeted blocks\n• Encryption is confirmed in progress and host isolation alone is insufficient to contain it\n• The cost of continued attacker access outweighs the cost of full connectivity loss\n\nNOTE: REDUNDANCY NOTE: If this action is executed, the following actions become redundant and do not need to be separately completed:\n• ID 3 (Isolate Network): blocking all traffic subsumes network segment isolation\n• ID 36 (Restrict/Shutdown VPN): VPN traffic is included in the all-traffic block\nDo not waste time executing those separately once this action is in place.\n\nNOTE: DECISION GATE: ID 51 (Firewall QoS Delay) is the mutually exclusive alternative strategy: choosing to delay and monitor the attacker's C2 channel is incompatible with blocking all traffic. If ID 51 is currently active, executing this action will alert the attacker that they have been detected. Make a conscious decision to abandon the delay tactic before executing this action.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "exfil"
+      ],
+      "killchain": "collection",
+      "ces": 3
+    },
+    {
+      "id": 38,
+      "activity": "Restrict Lateral Movement from Endpoints",
+      "effectiveness": "Medium-High",
+      "category": "Network Segmentation",
+      "business_impact": "Low",
+      "notes": "Block workstation-to-workstation and workstation-to-non-DC/non-File-Server traffic:\n• SMB (TCP/445, TCP/135, TCP/139)\n• Remote Desktop Protocol (TCP/3389)\n• Windows Remote Management / Remote PowerShell (TCP/80, TCP/5985, TCP/5986)\n• WMI (dynamic DCOM port range)\n\nQuick enforcement via netsh (per host or scripted at scale before GPO can be deployed):\nnetsh advfirewall firewall set rule group=\"File and Printer Sharing\" new enable=no\nnetsh advfirewall firewall set rule group=\"Remote Desktop\" new enable=no\nnetsh advfirewall firewall set rule group=\"Windows Remote Management\" new enable=no\nnetsh advfirewall firewall set rule group=\"windows management instrumentation (wmi)\" new enable=no\n\nOr disable PowerShell Remoting directly:\nDisable-PSRemoting -Force\n\nNOTE: SEE ALSO: ID 16 (Apply Local Host Firewall Rules) covers the same SMB/RDP ports via manual per-host Windows Firewall configuration. This action (ID 38) applies the equivalent rules via GPO for domain-wide coverage. Do not execute both, choose based on speed and scope: GPO (this action) for domain-wide enforcement, ID 16 for targeted manual application on specific hosts. ID 41 (WinRM Hardening) disables WinRM at the service layer — run alongside this action for defence-in-depth.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "rdp"
+      ],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 39,
+      "activity": "RDP Hardening",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium-High",
+      "notes": "Harden Remote Desktop Protocol access to prevent it from being used for initial access or lateral movement. RDP on internet-facing systems is a primary entry vector across most ransomware groups.\n\n1. Enforce MFA for RDP: require multi-factor authentication before a session is established, via Remote Desktop Gateway with Entra ID / RADIUS integration, or via a third-party MFA wrapper.\n\n2. Enable Network Level Authentication (NLA): requires authentication before a full RDP session is established, protecting against brute force and unauthenticated exposure. GPO path:\nComputer Configuration > Policies > Administrative Templates > Windows Components > Remote Desktop Services > Remote Desktop Session Host > Security >\nRequire user authentication for remote connections by using NLA: Enabled\n\nWARNING: NLA uses CredSSP to pass authentication requests from the initiating system. CredSSP stores credentials in LSA memory on the source host and those credentials may remain in memory even after the user logs off. On a compromised initiating host, enabling NLA can therefore expose newly entered credentials through LSA memory. Apply NLA on the RDP server side to enforce pre-authentication, but do not use a compromised or suspected host as an RDP client while CredSSP is active.\n\n3. Restrict administrative accounts from RDP on internet-facing systems. GPO path: Computer Configuration > Windows Settings > Security Settings > Local Policies > User Rights Assignment > Deny log on through Remote Desktop Services, add Domain Admins and other privileged groups.\n\nNOTE: Source: Mandiant Ransomware Protection and Containment Strategies.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "rdp"
+      ],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 40,
+      "activity": "Disable Administrative / Hidden Shares",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium-High",
+      "notes": "Ransomware operators use administrative and hidden shares (ADMIN$, C$, D$, IPC$) to bind to endpoints throughout the environment and deploy encryptors — staging payloads to target systems and executing them remotely, often via PsExec or direct SMB access. Disabling these shares removes that lateral deployment channel. Note that this action targets the attacker's movement and execution path. File shares — where ransomware actually encrypts data — are a separate concern and are not addressed by disabling administrative shares.\n\nWARNING: IMPACT WARNING: Disabling administrative and hidden shares on Domain Controllers will significantly impact domain functionality. Group Policy, SYSVOL replication, remote management tools, and many monitoring agents depend on these shares. Apply to workstations and member servers first. Only apply to DCs if the situation is critical and the operational impact is accepted.\n\nIf PsExec is used in the environment, disabling ADMIN$ prevents it from being used to remotely deploy or execute anything on endpoints — PsExec requires ADMIN$ to copy and launch its service component on the remote host.\n\nMethod 1: Registry (workstations):\nHKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters\nDWORD Name: AutoShareWks, Value: 0\n\nMethod 2: Registry (servers):\nHKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters\nDWORD Name: AutoShareServer, Value: 0\n\nA restart of the Server service or a system reboot is required for the registry change to take effect. If an immediate effect is needed without a reboot, use Method 3.\n\nMethod 3: Stop the Server service (immediate effect, no reboot required).\n\nWARNING: Stopping the Server service disables ALL file and print sharing on the system immediately, including any legitimate shares. This is the fastest option but has the broadest impact. Confirm operational dependencies before applying to servers.\n\nMethod 4: Group Policy (domain-wide, MSS Legacy template):\nRequires the Microsoft Security Compliance Toolkit MSS Legacy GPO template to be imported into Group Policy Management.\n\nFor workstations:\nComputer Configuration > Policies > Administrative Templates > MSS (Legacy) > MSS: (AutoShareWks) Enable Administrative Shares (not recommended) > Set to: Disabled\n\nFor servers:\nComputer Configuration > Policies > Administrative Templates > MSS (Legacy) > MSS: (AutoShareServer) Enable Administrative Shares (not recommended) > Set to: Disabled\n\nTo restore shares after the incident: delete the AutoShareWks or AutoShareServer registry value (do not set to 1 — deleting the value restores default behaviour), then restart the Server service.\n\nNOTE: Source: Mandiant Ransomware Protection and Containment Strategies.\nNOTE: SEE ALSO: ID 14 (Disable File Shares) covers the same capability with a focus on the fastest immediate method (stopping the Server service). This action (ID 40) is the more complete reference.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access"
+      ],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 41,
+      "activity": "Windows Remote Management (WinRM) Hardening",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Medium-High",
+      "notes": "Disable Windows Remote Management and PowerShell Remoting to prevent attackers from using these channels for lateral movement and remote command execution. WinRM is the transport for PowerShell Remoting and is frequently abused in ransomware deployments alongside SMB.\n\nGPO path (domain-wide):\nComputer Configuration > Policies > Administrative Templates > Windows Components > Windows Remote Management (WinRM) > WinRM Service >\nAllow remote server management through WinRM: Disabled\n\nWARNING: Disabling WinRM will break remote PowerShell sessions, Desired State Configuration (DSC), and monitoring agents that use WS-Management. Confirm which management tools depend on WinRM before applying at scale to avoid breaking your own visibility and management capability.\n\nNOTE: SEE ALSO: ID 38 (Restrict Lateral Movement from Endpoints) blocks WinRM ports TCP/5985 and TCP/5986 at the firewall level as a complementary control.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 42,
+      "activity": "Privileged Account Logon Restrictions",
+      "effectiveness": "High",
+      "category": "Privilege Account Management",
+      "business_impact": "High",
+      "notes": "Block privileged accounts from authenticating to standard workstations, laptops, and common access servers (e.g. VDI). During ransomware incidents, attackers holding privileged credentials use them to log into workstations and spread laterally, restricting where those accounts can authenticate contains the blast radius even if the credentials themselves have not yet been rotated.\n\nThis is enforced via Group Policy User Rights Assignment. Apply to a GPO linked at the domain or OU level targeting workstations and common access servers. Do NOT apply these restrictions to Domain Controllers or administrative jump servers, privileged accounts must retain the ability to log into those systems to manage the incident.\n\nGPO path:\nComputer Configuration > Windows Settings > Security Settings > Local Policies > User Rights Assignment\n\nSettings to configure, add privileged account groups to each:\n\nDeny log on locally\nPrevents privileged accounts from logging in interactively at the console of workstations and common servers.\nAdd: Domain Admins, Enterprise Admins, Schema Admins, and any other privileged groups\n\nDeny log on through Remote Desktop Services\nPrevents privileged accounts from connecting via RDP to workstations and common servers.\nAdd: Domain Admins, Enterprise Admins, Schema Admins, and any other privileged groups\n\nDeny access to this computer from the network\nPrevents privileged accounts from connecting via SMB, WMI, PsExec, or any network-based authentication to workstations and common servers.\nAdd: Domain Admins, Enterprise Admins, Schema Admins, and any other privileged groups\n\nDeny log on as a batch job\nPrevents privileged accounts from being used for scheduled tasks on workstations.\nAdd: Domain Admins, Enterprise Admins, and any other privileged groups\n\nDeny log on as a service\nPrevents privileged accounts from being registered as service accounts on workstations.\nAdd: Domain Admins, Enterprise Admins, and any other privileged groups\n\nWARNING: Before applying, verify that no legitimate administrative processes on workstations depend on Domain Admin or other privileged accounts logging in locally or via network. In most well-managed environments this dependency should not exist, but confirm before applying at scale to avoid breaking management tooling during the incident.\n\nWARNING: These restrictions apply to the systems the GPO targets, not to the accounts themselves. Privileged accounts remain usable on Domain Controllers and designated admin workstations (PAWs) where the GPO is not applied.\n\nNOTE: Source: Mandiant Ransomware Protection and Containment Strategies; Google Threat Intelligence UNC3944 Hardening Guidance.\nSEE ALSO, ID 43 (Service Account Logon Restrictions) applies the same GPO mechanism to service accounts. ID 28 (Privileged Account Identification and Reduction) covers identifying which accounts require these restrictions.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3
+    },
+    {
+      "id": 43,
+      "activity": "Service Account Logon Restrictions",
+      "effectiveness": "High",
+      "category": "Privilege Account Management",
+      "business_impact": "Low",
+      "notes": "Service accounts used by applications, monitoring tools, backup agents, and scheduled tasks rarely need interactive or remote logon rights, but they frequently have them by default. Attackers who compromise a service account credential will attempt to use it for RDP, network-based authentication, or direct console logon to move laterally. Enforcing logon restrictions via GPO removes those authentication paths without disrupting the legitimate function of the service.\n\nApply to endpoints and servers where the service account operates but does not require interactive or network-based human logon. Do not apply blanket restrictions without first confirming the account is not used for remote administration on that system.\n\nGPO path:\nComputer Configuration > Windows Settings > Security Settings > Local Policies > User Rights Assignment\n\nSettings to configure, add the service account or its containing security group:\n\nDeny log on locally\nPrevents the service account from being used for interactive console logon.\nAdd: the specific service account or group\n\nDeny log on through Remote Desktop Services\nPrevents the service account from being used for RDP connections.\nAdd: the specific service account or group\n\nDeny access to this computer from the network\nPrevents the service account from authenticating via SMB, WMI, PsExec, or other network-based protocols on endpoints where it is not needed.\nAdd: the specific service account or group\n\nWARNING: Apply per-account and per-scope. A service account that runs a backup agent on server A may legitimately need network access to server A but not to workstations. Scope the GPO accordingly, do not apply a blanket domain-wide restriction without mapping which systems each service account legitimately needs to reach.\n\nWARNING: Do NOT add service accounts to the Protected Users security group as a substitute for these restrictions, Protected Users disables NTLM and Kerberos delegation, which will break most services that rely on them. Use User Rights Assignment instead (see ID 44, Protected Users Security Group for the relevant warning).\n\nNOTE: Source: Mandiant Ransomware Protection and Containment Strategies.\nSEE ALSO, ID 42 (Privileged Account Logon Restrictions) applies the same mechanism to human privileged accounts. ID 28 (Privileged Account Identification and Reduction) covers identifying which service accounts carry excessive privilege.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 4
+    },
+    {
+      "id": 44,
+      "activity": "Protected Users Security Group",
+      "effectiveness": "Medium-High",
+      "category": "Privilege Account Management",
+      "business_impact": "Medium-High",
+      "notes": "Add privileged user accounts to the Protected Users security group to enforce automatic credential protections. Members of the group cannot authenticate using NTLM, cannot use Kerberos delegation, and cannot use RC4 encryption — protections that prevent credential theft and pass-the-hash attacks against those accounts.\n\nRequirement: domain functional level Windows Server 2012 R2 or higher.\n\nTo add an account: Active Directory Users and Computers > find the account > Properties > Member Of > Add > Protected Users.\n\nWARNING: Do NOT add service accounts to this group. Service accounts commonly rely on NTLM, Kerberos delegation, or RC4 — all of which are disabled for Protected Users members. Adding a service account will immediately break any service that depends on these mechanisms.\n\nWARNING: SERVICE DISRUPTION RISK: Adding any account to Protected Users disables NTLM, Kerberos unconstrained and constrained delegation, and RC4 encryption for that account. Any application or system that depends on these mechanisms for that account will break immediately. Test in staging if possible. If staging is not available during an active incident, accept the disruption risk as a conscious decision, document it, notify the business, and retain the rollback: removing the account from the group restores previous behaviour.\n\nWARNING: RDP SILENT FAILURE — Protected Users members can only authenticate via Kerberos, which requires a direct network path to a Domain Controller. If the user attempts RDP from a network segment that cannot reach a DC at authentication time, the RDP session will silently fail with a generic authentication error rather than a clear message about NTLM being disabled. This is a common silent failure mode that is difficult to diagnose under incident pressure.\n\nThe mitigation is not to avoid adding accounts to Protected Users — it is to ensure at least one Domain Controller remains reachable from every segment where those accounts need to log in. ID 2 (Isolate One Domain Controller) is designed to preserve this: it isolates one DC as a clean reference point while keeping other DCs operational for authentication. Before adding admin accounts to Protected Users, confirm that the domain has at least one non-isolated, reachable DC, and that all segments those accounts need to reach via RDP have a routed path to it.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 2
+    },
+    {
+      "id": 45,
+      "activity": "Cleartext Password Protections (Disable WDigest)",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Medium-High",
+      "notes": "Disable WDigest authentication to prevent Windows from caching cleartext credentials in LSASS memory. When WDigest is enabled, Windows stores a reversible copy of user passwords in memory — an attacker with access to LSASS (via credential dumping tools) can extract those plaintext passwords directly. Disabling WDigest removes that exposure.\n\nEnable via Group Policy using the Microsoft Security Guide template:\nComputer Configuration > Policies > Administrative Templates > MS Security Guide > WDigest Authentication > set to Disabled.\n\nThe Microsoft Security Guide GPO template is part of the Microsoft Security Compliance Toolkit. Import the ADMX template into Group Policy Management before this setting becomes available in the console.\n\nNOTE: WDigest is disabled by default on Windows 8.1 and Windows Server 2012 R2 and later. Apply this action for environments running older Windows versions or where the setting may have been explicitly re-enabled.\n\nWARNING: ATTACKER RE-ENABLEMENT RISK: An attacker who retains registry write access to a host can re-enable WDigest at any time during the incident by setting the registry value HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential to 1. Once re-enabled, the next interactive logon to that host will cache the user's cleartext password in LSASS memory. This is an active technique used during incidents to capture credentials entered by responders after initial access was achieved. Disabling WDigest via GPO is not sufficient if the attacker can still write to that registry key directly on a compromised host. Apply ID 45 in conjunction with host isolation (ID 4) to prevent the attacker from reaching the host to re-enable it. After applying the GPO, monitor for Event ID 4657 (registry value modified) on critical hosts — a change to the UseLogonCredential value is a high-confidence indicator of active attacker presence on that host.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 3
+    },
+    {
+      "id": 46,
+      "activity": "Review Group Policy Objects (GPOs)",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Low",
+      "notes": "Review all Group Policy Objects for unauthorised modifications. Attackers with domain admin access commonly modify or create GPOs to deploy ransomware payloads, disable security tools, or create persistence via startup scripts.\n\nList recently modified GPOs using Get-GPO in PowerShell or the Group Policy Management Console (GPMC) — sort by modification time and compare against your change management records. Focus on GPOs modified in the last 30 to 90 days and cross-reference against your change management records. Investigate any GPO with:\n• Startup or logon scripts pointing to unusual paths or UNC shares\n• Software installation policies deploying unknown packages\n• Security settings disabling Windows Defender, audit logging, or firewall\n• Scheduled tasks created via GPO targeting domain-joined systems\n\nReview which accounts have GPO creation/modification rights using Get-GPPermission in PowerShell or by checking Delegation settings in the GPMC for each GPO.\n\nNOTE: Source: Mandiant Ransomware Protection and Containment Strategies. SEE ALSO, ID 47 (Monitor GPO Changes via Event ID 5136) for ongoing detection.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access"
+      ],
+      "killchain": "persistence",
+      "ces": 4
+    },
+    {
+      "id": 47,
+      "activity": "Monitor GPO Changes (Event ID 5136)",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Low",
+      "notes": "Monitor Domain Controller security event logs for Event ID 5136, which records every modification to Active Directory objects including Group Policy Objects. This is the primary detection mechanism for GPO-based persistence and ransomware deployment activity.\n\nPrerequisite, enable the audit policy on Domain Controllers:\nGPO path: Computer Configuration > Windows Settings > Security Settings > Advanced Audit Policy Configuration > DS Access >\nAudit Directory Service Changes: Success and Failure\n\nOr via auditpol on each DC — consult Microsoft documentation for the current syntax to enable the Directory Service Changes subcategory under DS Access.\n\nQuery recent 5136 events using Get-WinEvent with a FilterHashtable targeting the Security log and Event ID 5136, scoped to the DC and a time window covering the incident period.\n\nNOTE: SEE ALSO: ID 46 (Review Group Policy Objects) for manual review of GPO modification timestamps. Both actions should be run together.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access"
+      ],
+      "killchain": "persistence",
+      "ces": 4
+    },
+    {
+      "id": 48,
+      "activity": "Identify Backup Infrastructure Dependencies",
+      "effectiveness": "High",
+      "category": "Backup",
+      "business_impact": "Low",
+      "notes": "Map all systems and dependencies that backup recovery relies on before attempting any restoration. Recovery efforts that proceed without this mapping frequently stall or fail because a required component — an authentication server, an encryption key store, a DNS resolver — is itself unavailable or compromised.\n\nDependencies to confirm are available and uncompromised before recovery begins:\n• Identity Provider (Active Directory or cloud IdP) for authenticating to recovery consoles and restored systems\n• MFA platform — required to access backup software or management consoles\n• Administrative platforms: bastion hosts, SAWs, PAM systems\n• Emergency access credentials, stored out-of-band\n• DNS — required for name resolution during system restoration\n• Storage connectivity: confirm on-premises and cloud storage paths are accessible\n• Offline backup media: confirm physical location and accessibility\n• Encryption keys for backup data, stored separately from the backup itself\n• Licensing and trusted software binaries if backup software must be reinstalled\n• SLA terms with backup vendors for expedited recovery support\n\nFor each dependency, confirm the current state: accessible, compromised, or unknown. Do not begin recovery on any system or dependency with an unknown or compromised state — resolve it first.",
+      "phases": [
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "impact",
+      "ces": 4
+    },
+    {
+      "id": 49,
+      "activity": "Conditional Access Policies",
+      "effectiveness": "Medium",
+      "category": "Access Control",
+      "business_impact": "Low",
+      "notes": "Enforce Conditional Access policies to block high-risk authentication attempts and require MFA from all users and locations. During an active incident, tightening CA policies limits the damage an attacker can do with stolen credentials.\n\nImmediate high-impact CA policies to apply or verify (Entra ID):\nPortal: Entra admin center > Protection > Conditional Access > Policies\n\n1. Block legacy authentication protocols (SMTP, POP, IMAP, basic auth), these bypass MFA entirely. Create a policy: All users > All cloud apps > Client apps: Exchange ActiveSync + Other clients > Block.\n\n2. Require MFA for all users from all locations: no exceptions for on-prem or trusted IPs during an active incident.\n\n3. Block access from non-compliant devices: requires Intune device compliance integration (see ID 50).\n\nFor Google Workspace: Admin console > Security > Access and data control > Context-Aware Access > Apply access levels.\n\nWARNING: Enabling MFA-required CA policies will lock out users who have not yet registered an MFA method. Coordinate with the help desk before enabling and ensure the shields-up protocol (ID 66) is active for verification requests.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 50,
+      "activity": "Conditional Access Policy + Intune",
+      "effectiveness": "Medium",
+      "category": "Access Control",
+      "business_impact": "Low",
+      "notes": "Combine Intune device compliance policies with Entra ID Conditional Access to automatically quarantine non-compliant devices, blocking their access to corporate resources without waiting for manual investigation of each device.\n\nHow it works: Intune marks a device as non-compliant if it fails a compliance check (no EDR, out-of-date OS, missing certificate). Conditional Access then blocks access to cloud apps for non-compliant devices immediately.\n\nSetup steps:\n1. Entra admin center > Devices > Compliance policies > Create policy\n Set required conditions: EDR installed and active, OS version minimum, encryption enabled, no jailbreak\n\n2. Entra admin center > Protection > Conditional Access > New policy\n Target: All users > All cloud apps\n Condition: Device compliance: Require device to be marked as compliant\n Grant: Block access if not compliant\n Set non-compliance grace period to 0 hours for immediate effect\n\nWARNING: Devices that are unmanaged (BYOD, contractor devices) will be blocked immediately if they are not enrolled in Intune. Confirm scope with the business before enabling, this may lock out contractors or mobile users. Use 'Report-only' mode first to assess impact if time permits.\n\nNOTE: SEE ALSO: ID 49 (Conditional Access Policies) covers the CA policy layer independently. This action (ID 50) extends ID 49 by adding Intune device compliance as an additional condition.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "saas",
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 51,
+      "activity": "Firewall QoS Delay (Threat Actor Delay Tactic)",
+      "effectiveness": "Low-Medium",
+      "category": "Network Segmentation",
+      "business_impact": "Low",
+      "notes": "If C2 or other external channels used by the threat actor have been identified but you haven't found the initial access vector yet, a direct block may tip them off. Using QoS/rate-limiting on the C2 traffic delays the TA's progress while you continue investigating. This tactic is applicable at initial access, lateral movement, and pre-encryption stages, any point before encryption begins where the full access path has not yet been identified and a direct block would risk burning visibility.\n\nWARNING: MUTUALLY EXCLUSIVE: Choosing this tactic means active blocking is off the table until the full access path is identified. Do NOT execute alongside ID 7 (DNS Sinkhole), ID 15 (Egress Filtering), ID 37 (Block ALL Traffic), or ID 62 (Block TOR/VPS Ranges). If you block while this is active, the attacker detects the change, abandons the known C2 channel, and pivots to one you have not found yet. Decide before acting: delay and investigate, or block and evict. These are not compatible strategies.\n\nWARNING: ESCALATION THRESHOLD: Reassess this tactic at every stage transition. If the attacker escalates to pre-encryption or begins staging tools, the delay benefit is exhausted, switch to active blocking and eviction immediately. The decision gate is: is the investigative value of maintaining visibility still worth the operational risk of the attacker progressing? If not, execute ID 7, ID 15, or ID 37 and abandon the delay.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "unknown"
+      ],
+      "killchain": "initial_access",
+      "ces": 1,
+      "decision_gate": true
+    },
+    {
+      "id": 52,
+      "activity": "SaaS Compromise — Visibility and Log Ingestion",
+      "effectiveness": "Medium-High",
+      "category": "Visibility",
+      "business_impact": "Low",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "unknown",
+        "exfil"
+      ],
+      "killchain": "collection",
+      "ces": 3,
+      "depends_on": [],
+      "conflicts_with": [],
+      "notes": "Establish visibility into SaaS and cloud platform audit logs to determine what the threat actor has accessed, modified, or exfiltrated. During SaaS-targeted incidents, attackers operate entirely within legitimate platform APIs — their activity leaves no trace on endpoints and is only visible in cloud-side audit logs. Without this visibility, containment decisions are made blind.\n\nThis action is a prerequisite for informed containment. Complete before or in parallel with ID 53 (Revoke Refresh Tokens) and ID 67 (Revoke OAuth App Registrations) — knowing which accounts and apps the attacker accessed tells you what to revoke and in what order.\n\nPriority log sources to ingest and review:\n\nMicrosoft 365 — Unified Audit Log (UAL):\nThe primary source for all M365-involved incidents. Covers authentication, mail access, file access, admin changes, OAuth consent grants, and cross-service activity. Access via Microsoft Purview Compliance portal > Audit > Search. Filter by the suspected compromise date range and focus on the following activities: UserLoggedIn, MailItemsAccessed, FileAccessed, Add OAuth2PermissionGrant, Add service principal credentials, Set-MailboxAuditing, New-InboxRule.\nWARNING: UAL records are retained for 90 days on standard licences and 180 days on E5. Export immediately — records at the retention boundary will be lost.\n\nEntra ID Sign-In Logs:\nReview interactive, non-interactive, and service principal sign-in logs for authentication from unexpected IP addresses, unusual user agents, or sign-ins immediately following a user's legitimate authentication (indicating session token theft or AitM relay). Retention default is 30 days — export immediately.\n\nOkta System Log:\nIf Okta is the identity provider, export the System Log for the suspected compromise window. Focus on user.authentication.sso events, policy.evaluate_sign_on, application.user_membership.add, and any MFA factor lifecycle events. Okta logs are the primary source for detecting MFA device enrollment by an attacker.\n\nGoogle Workspace Admin Audit and Login Logs:\nReview Admin Audit for OAuth app authorisations, delegated admin changes, and Gmail filter or forwarding rule creation. Review Login Reports for suspicious IP addresses or session anomalies.\n\nSalesforce Event Monitoring:\nIf Salesforce is in scope, review Login History and API Usage logs for bulk data exports, unusual query patterns, or access from unfamiliar IP addresses.\n\nWhat to look for across all sources:\n• Authentication from IP addresses not associated with the legitimate user (especially residential proxies, VPN ranges, or TOR exit nodes)\n• Session activity continuing after the legitimate user's session ended\n• OAuth application consent grants issued around or after the suspected compromise time\n• Mail forwarding rules, inbox rules, or delegation grants not created by the user\n• Bulk file access or export events, particularly outside business hours\n• Admin role assignments or privilege escalations not matching change records\n\nNOTE: SEE ALSO: ID 18 (Collect and Preserve TA Logs) covers the export and preservation of these same log sources. This action (ID 52) focuses on the investigative review and interpretation of what the logs show — what did the attacker access, when, and from where. ID 53 (Revoke Refresh Tokens) and ID 67 (Revoke OAuth App Registrations) are the containment actions that follow once the scope of access is understood."
+    },
+    {
+      "id": 53,
+      "activity": "SaaS Compromise — Revoke Refresh Tokens",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Low",
+      "notes": "Revoke refresh tokens: invalidate stolen refresh tokens to force attacker sessions to expire and prevent new access token generation.\nDisable risky sessions: immediately terminate all active sessions associated with the compromised account or token.\n\nSTEPS: PLATFORM-SPECIFIC REVOCATION STEPS:\n\nOkta:\n• Revoke all active sessions for compromised users: Admin Console > Directory > People > [User] > More Actions > Clear User Sessions\n• Revoke all OAuth tokens: Admin Console > Applications > [App] > Assignments, remove user, then re-add after containment\n• Revoke all refresh tokens issued to suspicious apps via Okta Admin > Applications > filter by recent grants\n\nMicrosoft Entra ID:\n• Revoke all refresh tokens: Revoke-MgUserSignInSession -UserId <UPN> (Graph PowerShell)\n• Admin Portal: Entra ID > Users > [User] > Revoke sessions\n• For bulk: foreach ($u in $users) { Revoke-MgUserSignInSession -UserId $u.Id }\n\nGoogle Workspace:\n• Admin Console > Users > [User] > Reset sign-in cookies, forces re-authentication\n• Revoke all OAuth app authorizations: Admin Console > Security > API controls > App access control\n• Remove access for any unrecognised connected apps immediately\n• Bulk revocation via Reports API or Admin SDK for all users in the incident scope\n\nWARNING: Token revocation alone is insufficient if rogue OAuth apps remain registered, combine with ID 67 (Audit and Revoke Unauthorised OAuth App Registrations).\n\nWARNING: CRITICAL: Token revocation alone is NOT sufficient:\nRevoking user refresh tokens forces session expiry, but malicious OAuth applications registered in your SaaS tenant can silently re-issue new access tokens using their own client credentials, independent of the user's session. Token revocation (this action) and OAuth app revocation (ID 67) must be executed together as a single atomic containment action. Executing one without the other leaves a re-entry path open.\n\nNOTE: SEE ALSO:\n• ID 67 (Audit and Revoke Unauthorised OAuth App Registrations): The essential companion to this action for vishing/SaaS identity compromise scenarios.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [],
+      "killchain": "persistence",
+      "ces": 4
+    },
+    {
+      "id": 54,
+      "activity": "Implement Attack Surface Reduction Rules (Defender)",
+      "effectiveness": "High",
+      "category": "Application Control",
+      "business_impact": "Low-Medium",
+      "notes": "Enable Microsoft Defender Attack Surface Reduction rules to block common attacker techniques at the execution layer. ASR rules enforce specific behaviour-based blocks independently of signature-based detection — they block the technique regardless of the file or tool used to perform it.\n\nRules to enable as a priority during incident response:\n• Block credential stealing from LSASS: prevents credential dumping tools from reading the Windows Local Security Authority process\n• Block persistence via WMI event subscriptions: prevents attackers from registering WMI-based persistence mechanisms that survive reboots\n• Block process creation from PSExec and WMI commands: prevents lateral movement via these common propagation channels\n• Block execution of potentially obfuscated scripts: targets encoded or obfuscated PowerShell used for payload delivery\n• Block executable files that do not meet prevalence, age, or trusted list criteria: blocks newly dropped binaries not previously seen in the environment\n• Block abuse of exploited vulnerable signed drivers: prevents driver-based privilege escalation and security tool bypass\n\nEnable via Group Policy: Computer Configuration > Administrative Templates > Windows Components > Microsoft Defender Antivirus > Microsoft Defender Exploit Guard > Attack Surface Reduction. Each rule is identified by a GUID — consult Microsoft's current ASR documentation for GUIDs and recommended states.\n\nEnable in audit mode first to identify legitimate processes that would be blocked before switching to enforce mode. Audit events appear as Event ID 1122 in the Microsoft-Windows-Windows Defender/Operational log.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "execution",
+      "ces": 4
+    },
+    {
+      "id": 55,
+      "activity": "Implement URL Filtering — Remote Management Tools",
+      "effectiveness": "High",
+      "category": "Content Filtering",
+      "business_impact": "Low-Medium",
+      "notes": "Block the domains and download URLs of remote management tools at the web proxy or DNS filtering layer. Ransomware operators routinely deploy commercial RMM tools for persistence and remote access because they are signed, trusted, and rarely blocked by endpoint controls.\n\nPriority tools to block:\nAtera, AnyDesk, Action1, Splashtop, TeamViewer, VNC, RemoteUtilities, ConnectWise, LogMeIn, Supremo, Fleetdeck, NinjaRMM, Mesh Central.\n\nFor an extended and regularly updated list of RMM tools observed in ransomware incidents, refer to the Ransomware Tool Matrix:\nhttps://github.com/BushidoUK/Ransomware-Tool-Matrix/blob/main/Tools/RMM-Tools.md\n\nImplementation:\n• Web proxy or secure web gateway: add tool domains and download URLs to a custom block category\n• DNS filtering platform: create block rules for each tool's primary domains\n• Perimeter firewall: block outbound connections to known IP ranges for each tool's relay infrastructure\n\nNOTE: SEE ALSO: ID 9 (Block Executables via AV/EDR) blocks these tools at the execution layer. ID 7 (DNS Sinkhole) redirects their callback domains. Use all three together for layered coverage.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "rmm"
+      ],
+      "killchain": "initial_access",
+      "ces": 4
+    },
+    {
+      "id": 56,
+      "activity": "Check for Spikes in Outbound Traffic",
+      "effectiveness": "Low-Medium",
+      "category": "Visibility",
+      "business_impact": "Low",
+      "notes": "Review network flow data and proxy logs for abnormal spikes in outbound traffic volume to identify active data exfiltration. Ransomware operators typically exfiltrate data before encrypting — catching an active exfiltration allows the transfer to be blocked or rate-limited before it completes.\n\nWhere to look:\n• Perimeter firewall flow logs: sort outbound sessions by bytes transferred; focus on sessions to unfamiliar external IPs or cloud storage endpoints with unusually high volumes\n• Web proxy logs: filter for large POST or PUT requests to external destinations, particularly cloud storage services (mega.nz, pcloud.com, gofile.io, transfer.sh) or file transfer utilities\n• SIEM: alert on outbound data volumes exceeding a baseline threshold per host per hour\n• EDR: review processes with high disk read activity combined with active outbound network connections — an indicator of active staging and transfer\n\nIndicators to investigate:\n• A single host generating significantly more outbound traffic than its peers\n• Large transfers to IP addresses in unusual geographic regions\n• Sustained outbound sessions over non-standard ports\n• File transfer tool processes (rclone.exe, winscp.exe, FileZilla.exe) with active network sessions\n\nWhen active exfiltration is identified, apply a firewall block or rate-limit at the perimeter for the destination IP or domain, and isolate the source host (ID 4). Coordinate with ID 51 (QoS Delay) if preserving visibility before blocking is a priority.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "exfil",
+        "unknown"
+      ],
+      "killchain": "collection",
+      "ces": 2
+    },
+    {
+      "id": 57,
+      "activity": "Shutdown Streaming Technologies (Citrix, etc.)",
+      "effectiveness": "Medium-High",
+      "category": "Network Segmentation",
+      "business_impact": "High",
+      "notes": "Restrict or shut down VPN and streaming technologies such as Citrix and VDI platforms to prevent their use as attacker footholds or initial access vectors. These technologies allow remote connectivity into the environment and should be limited to essential personnel who have reset their credentials and re-registered their MFA method. Non-critical users should have access revoked until the incident is contained.\n\nAccess restrictions to apply immediately:\n• Limit access to dedicated security and IT personnel only\n• Require that any user retaining access has reset their password and re-registered their MFA method before reconnecting\n• Terminate all active sessions for users not on the approved list\n• Enforce Host Integrity Posture checks where possible: validate that connecting devices have an active EDR agent, are domain-joined, and meet OS patch level requirements\n• Revoke access for all non-critical end users until the incident is contained\n\nIf the platform is confirmed or strongly suspected as the initial access vector:\n• Escalate to full shutdown\n• Review platform logs for authentication from unusual source IPs, failed authentication spikes, and sessions initiated around the suspected intrusion time\n• Check the deployed version against the vendor's security bulletin history for unpatched CVEs\n\nWARNING: Full shutdown of a streaming platform causes significant business disruption. Apply restriction first and escalate to shutdown only when the platform is confirmed as the entry point or when restriction alone is insufficient.\n\nNOTE: Source: Mandiant Ransomware Protection and Containment Strategies.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "initial_access",
+      "ces": 3
+    },
+    {
+      "id": 58,
+      "activity": "Disable SMBv1",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Low",
+      "notes": "SMBv1 is a mass propagation vector still exploited via EternalBlue and similar techniques. Before disabling, check whether SMBv1 is actively in use to avoid accidental business disruption.\n\nCheck for active SMBv1 usage first:\nEnable SMBv1 audit logging on the server to capture Event ID 3000 in the Microsoft-Windows-SMBServer/Audit event log. Event ID 3000 records every inbound SMBv1 connection attempt. If no 3000 events appear within a monitoring window of 30 to 60 minutes during normal business hours, SMBv1 is not in active use and it is safe to disable without disruption. If 3000 events appear, identify the source hosts and assess whether those connections can be migrated before disabling.\n\nEnable SMBv1 audit logging via Group Policy:\nComputer Configuration > Policies > Administrative Templates > MS Security Guide > Configure SMBv1 Server > Enabled: configure to Audit mode\n\nOr enable via PowerShell on individual servers:\nSet-SmbServerConfiguration -AuditSmb1Access $true\n\nDisable once confirmed safe:\n\nRegistry, Server (listener):\nHKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters\nSMB1 = REG_DWORD 0\n\nRegistry, Client:\nHKLM\\SYSTEM\\CurrentControlSet\\services\\mrxsmb10\nStart = REG_DWORD 4\n\nGroup Policy (Microsoft Security Guide template):\nComputer Configuration > Policies > Administrative Templates > MS Security Guide > Configure SMBv1 Server\n\nWARNING: Even if Event ID 3000 shows no active use, legacy devices such as older printers, NAS units, and unmanaged network appliances may use SMBv1 intermittently or only during specific operations. If such devices exist in the environment, verify them individually before applying the disable at scale.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "unknown"
+      ],
+      "killchain": "lateral",
+      "ces": 3
+    },
+    {
+      "id": 59,
+      "activity": "Block Outbound Connections from Specific Windows Binaries",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Low-Medium",
+      "notes": "Attackers use legitimate Windows binaries to download encryptors and backdoors from internal staging points and external C2. Create Windows Firewall outbound block rules for high-risk binaries.\n\nHigh-priority binaries to block outbound:\n• powershell.exe\n• bitsadmin.exe\n• certutil.exe\n• wscript.exe\n• cscript.exe\n• mshta.exe\n• regsvr32.exe\n\nGroup Policy path:\nComputer Configuration > Policies > Windows Settings > Security Settings > Windows Firewall with Advanced Security > Outbound Rules\n\nCreate rule: Program = [binary path], Action = Block, Direction = Outbound. The same rule can be created via PowerShell using New-NetFirewallRule — consult current Microsoft documentation for syntax.\n\nWARNING: Test in audit/monitor mode first. Blocking PowerShell outbound may impact legitimate monitoring agents and management tools. Scope to workstations first before servers.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "unknown",
+        "cred_dump"
+      ],
+      "killchain": "execution",
+      "ces": 3
+    },
+    {
+      "id": 60,
+      "activity": "Isolate and Restrict Access to PAM / Password Vault Systems",
+      "effectiveness": "High",
+      "category": "Privilege Account Management",
+      "business_impact": "Medium",
+      "notes": "If the attacker reaches your PAM system or password vault, all credential rotation efforts become worthless, they can simply re-check out credentials. Isolate and lock down the vault immediately.\n\nWARNING: EXECUTE BEFORE ID 13 and ID 29, This action must be completed before any credential rotation. Rotating passwords into a compromised vault gives the attacker the new credentials.\n\nContainment steps:\n1. Restrict network access to PAM/vault system to a small set of trusted IPs or a dedicated PAW segment only\n2. Require MFA re-authentication for all vault access: revoke any active sessions\n3. Do NOT store newly rotated passwords in the vault until the incident is fully contained\n4. Decouple PAM system authentication from the compromised Active Directory if AD integration is in place, switch to local PAM accounts\n5. Reduce the scope of accounts with vault access to the minimum required for the response\n6. Enable enhanced logging on all PAM authentication and credential checkout events\n7. Review recent credential checkout history for suspicious access patterns\n\nCommon PAM platforms include enterprise password vault and privileged access management solutions\n\nWARNING: Do not disable the PAM system entirely, responders need it for managing the response. The goal is isolation and session eviction, not shutdown.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad",
+        "cloud",
+        "vmware",
+        "saas",
+        "federated"
+      ],
+      "ta": [],
+      "killchain": "privilege_esc",
+      "ces": 4
+    },
+    {
+      "id": 61,
+      "activity": "Lock External Self-Service Password Reset (SSPR) and Harden Help Desk Verification",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Medium",
+      "notes": "Social engineering of the help desk and abuse of self-service password reset is the primary initial access vector for Scattered Spider and increasingly used by other groups. This is the emergency version of ID 32, use when social engineering or SSPR abuse is confirmed or actively suspected.\n\nImmediate actions:\n1. Temporarily disable external self-service password reset (SSPR), require users to contact IT directly\n2. For Microsoft Entra ID: Disable SSPR from external locations in Authentication Methods > Password Reset > Properties\n3. Require all password reset and MFA device modification requests to go through an enhanced verification workflow:\n • On-camera or in-person identity verification\n • Challenge/response questions based on internal-only knowledge (not DOB or last 4 SSN, attackers have this)\n • Out-of-band callback to a registered corporate number\n4. Restrict MFA device re-registration to corporate locations or trusted IP ranges only\n5. Notify help desk staff of the active incident and instruct them not to action any account modification requests without escalation\n6. Alert on any self-service password reset or MFA registration events during the incident window\n\nWARNING: Communicate to end users via out-of-band channel (email, Teams, SMS blast) that password resets must go through IT directly. Without this communication, help desk call volume will spike.\nWARNING: See also ID 32 (Harden Password Reset Processes), the measured version used earlier in the investigation before escalation to this action.\n\nNOTE: SEE ALSO: Human/procedural complement:\n• ID 66 (Activate Help Desk Shields-Up Protocol): This action (ID 61) covers the TECHNICAL layer, disabling SSPR portals and restricting MFA registration in the IdP. ID 66 covers the HUMAN/PROCEDURAL layer, briefing service desk staff on heightened verification requirements. Both must be executed in the same window. If the technical lock (ID 61) is active but the service desk isn't briefed (ID 66), attackers will pivot to calling the help desk directly to request manual resets, bypassing the technical controls entirely.",
+      "phases": [
+        "initial_access",
+        "lateral_movement"
+      ],
+      "infra": [
+        "windows_ad",
+        "saas"
+      ],
+      "ta": [
+        "cred_dump",
+        "unknown"
+      ],
+      "killchain": "initial_access",
+      "ces": 4
+    },
+    {
+      "id": 62,
+      "activity": "Block TOR Exit Nodes and Known VPS / Bulletproof Hosting IP Ranges",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Low",
+      "notes": "C2 traffic, exfiltration, and attacker remote access frequently routes through TOR exit nodes and bulletproof VPS ranges. Blocking these at the perimeter cuts interactive attacker access and slows or stops active exfiltration with minimal legitimate business impact.\n\nImmediate steps:\n1. Block all known TOR exit node IP ranges at the perimeter firewall and proxy\n • Maintained list: https://check.torproject.org/torbulkexitlist\n • Your threat intelligence feed or service (if subscribed) will maintain an updated TOR exit node list\n2. Block outbound traffic to known VPS/bulletproof hosting ASNs commonly used by ransomware operators:\n • Common ASNs: AS9009 (M247), AS60781 (LeaseWeb), AS208091, AS59900, check your threat intel feed for current list\n3. Block outbound to IP ranges not associated with known CDNs, SaaS platforms, or business-critical destinations (allowlist approach for servers if feasible)\n4. If a SIEM or proxy is available, alert on any successful connections to TOR or known malicious IP ranges before the block is in place\n\nWARNING: TOR exit lists change frequently. Use a threat intel feed rather than a static list for ongoing coverage. Some legitimate privacy tools and research functions use TOR, in an active incident, block first and carve exceptions later.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "exfil",
+        "unknown"
+      ],
+      "killchain": "collection",
+      "ces": 3
+    },
+    {
+      "id": 63,
+      "activity": "Hunt for and Restrict Rogue VMs, Bastion Hosts, and Newly Joined Devices",
+      "effectiveness": "High",
+      "category": "Visibility",
+      "business_impact": "Low",
+      "notes": "Attackers create rogue virtual machines, bastion hosts, or join attacker-controlled devices to the domain to establish persistent footholds that survive credential rotation and host remediation.\n\nHunting steps:\n1. Review vCenter / ESXi for virtual machines created or modified in the last 30 days, compare against change management records\n2. Review Active Directory for devices joined to the domain in the last 30 days using Get-ADComputer filtered by WhenCreated date, or by checking the Computers container in Active Directory Users and Computers sorted by creation date.\n3. Review Entra ID / Azure AD for newly registered or joined devices\n4. Check for newly created or modified network security group rules and publicly exposed resources in cloud environments\n5. Alert on new programmatic access keys (AWS Access Keys, Azure Service Principals, GCP Service Accounts) created during the incident window\n6. Review authentication logs for device names using default Windows naming conventions (DESKTOP-XXXXXXX, WIN-XXXXXXX), common indicator of attacker-staged devices\n\n SAAS TENANT, HUNT FOR ROGUE OAUTH APP REGISTRATIONS:\nFor SaaS-targeted attacks (vishing, MFA manipulation, ShinyHunters-type), attackers register malicious OAuth applications to maintain persistent access and manipulate mailboxes silently. Hunt these alongside device/VM hunting:\n7. Google Workspace: Admin Console > Security > API controls > App access control, review all third-party apps with data access granted in the last 30 days; revoke any unrecognised app immediately\n8. Microsoft Entra ID: Entra admin center > Applications > Enterprise applications > filter by Created date, review all apps registered or consented to recently; remove any unauthorised registrations\n9. Okta: Admin Console > Applications: filter by Created date; review all apps added during the incident window and revoke any not in the approved inventory\n10. Salesforce: Setup > Connected Apps OAuth Usage: review all connected apps and revoke any not approved\n• Treat any unrecognised OAuth app with mail, files, or admin scopes as a confirmed persistence mechanism, revoke immediately and treat the granting account as compromised\n• See ID 67 (Audit and Revoke Unauthorised OAuth App Registrations) for the dedicated SaaS OAuth action\n\nContainment:\n• Disable or remove any unrecognised devices from the domain immediately\n• Power off and snapshot any unrecognised VMs before removal for forensic review\n• Revoke any programmatic keys created during the incident window\n\nWARNING: Coordinate with IT operations before removing devices, confirm each device is unrecognised and not a legitimate recent deployment.",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "vmware",
+        "windows_ad",
+        "cloud"
+      ],
+      "ta": [
+        "dc_access",
+        "unknown"
+      ],
+      "killchain": "persistence",
+      "ces": 3
+    },
+    {
+      "id": 64,
+      "activity": "Block Compromised AWS IAM User",
+      "effectiveness": "High",
+      "category": "Identities",
+      "business_impact": "Low-Medium",
+      "notes": "Disable the compromised IAM user to revoke long-term access key usage and console access.\n\nWARNING: CRITICAL: Disabling an IAM user does NOT terminate active AWS sessions already in progress. Any session tokens already issued (via AWS STS AssumeRole) remain valid until they naturally expire (up to 12 hours). Disabling the user is necessary but not sufficient. You must also attach an explicit deny policy to kill in-flight sessions.\n\nContainment actions (consult AWS documentation or IAM console for current steps):\n1. Disable console access and deactivate all access keys for the compromised user\n2. Attach an explicit deny-all policy to the user to terminate in-flight sessions immediately\n3. If credentials originated from AssumeRole via STS, the compromised principal is the role, not the user. Take all of the following actions against the role:\n   • Remove the role trust policy to block new federation tokens\n   • Detach all permissions from the role\n   • Attach an explicit deny-all inline policy to the role\n4. Review IAM for any attacker-registered MFA devices and remove them\n5. Review CloudTrail events for the compromised username to identify lateral movement or persistence actions taken during the compromise window\n\nWARNING: Do NOT delete the IAM user or role during the incident, deletion destroys the audit trail. Disable and deny only.\n\nNOTE: SEE ALSO: ID 65 (Block Compromised AWS Federated User) covers the separate scenario where the identity is federated via Okta, Entra ID, or ADFS and there is no persistent IAM user to disable. Determine which applies before acting, applying IAM user disable to a federated identity will have no effect.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "cloud"
+      ],
+      "ta": [
+        "cred_dump",
+        "unknown"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 4
+    },
+    {
+      "id": 65,
+      "activity": "Block Compromised AWS Federated User",
+      "effectiveness": "High",
+      "category": "Identities",
+      "business_impact": "Low-Medium",
+      "notes": "Federated identities access AWS via an external IdP (Okta, Entra ID, ADFS) using SAML or OIDC. There is no persistent IAM user to disable — containment must happen at the IdP AND in AWS simultaneously.\n\nThe same STS session persistence risk applies as described in ID 64 — blocking the identity at the IdP does NOT immediately terminate existing AWS sessions. SAML/OIDC-issued STS credentials remain valid until they expire (typically 1 to 12 hours). Attaching an explicit deny policy to the IAM role is required to kill in-flight sessions immediately. Never rely on the IdP block alone.\n\nContainment steps (execute simultaneously):\n1. Disable or suspend the user at the IdP (Okta: suspend user / Entra ID: block sign-in / ADFS: disable AD account)\n2. Revoke all active sessions and refresh tokens at the IdP (see ID 53)\n3. Identify the IAM role used via CloudTrail: look for AssumeRoleWithSAML or AssumeRoleWithWebIdentity events\n4. Attach an explicit deny-all policy to that IAM role to kill in-flight sessions immediately\n5. Remove the role trust policy to block new federation tokens from being issued\n6. Review CloudTrail for any lateral movement or persistence actions taken from the compromised session\n\nWARNING: If the IAM role is shared across multiple users, scope the deny using sts:RoleSessionName condition to limit blast radius to the compromised session only.\n\nAs with ID 64, do not delete the IAM role — this destroys the audit trail. Disable and deny only.\n\nNOTE: SEE ALSO: ID 64 (Block Compromised AWS IAM User) covers the scenario where the identity has a persistent IAM user (long-term access keys, console password). Determine which applies to your environment before acting — the correct action depends entirely on whether the identity is federated or native IAM.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "cloud",
+        "federated"
+      ],
+      "ta": [
+        "cred_dump",
+        "unknown"
+      ],
+      "killchain": "privilege_esc",
+      "ces": 4
+    },
+    {
+      "id": 66,
+      "activity": "Activate Help Desk Shields-Up Protocol",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Low",
+      "notes": "During an active incident involving vishing or social engineering, the service desk is a direct attack surface. Threat actors impersonate employees and third-party vendors to manipulate help desk staff into resetting MFA or granting access. Activate shields-up procedures immediately.\n\nImmediate actions for the service desk:\n1. Require live video call for ALL account modification requests, user must hold a physical government ID next to their face; agent must visually verify the match\n2. Confirm the name on the ID matches the employee's corporate record\n3. Require out-of-band manager approval before processing any password reset or MFA change, contact the manager at a known corporate number, not the one provided by the caller\n4. NEVER process a reset based solely on employee ID, SSN, date of birth, or manager name, attackers obtain this data from prior breaches\n5. Always call back at a known-good corporate number before performing any reset, never trust the inbound caller's number (spoofing is trivial)\n6. If live video is not possible, require the user to come in person. No exceptions for high-privileged accounts\n7. End any inbound call from a third-party vendor claiming to need access, independently verify via the vendor's known account manager using on-file contact info only\n\nCommunications:\n• Brief ALL service desk staff on the active incident and heightened procedures, do not wait for a formal communication chain\n• Notify technology operations staff not to accept work direction via SMS from colleagues during the incident window\n• Communicate to end users (via out-of-band channel) that MFA and password changes must go through IT directly, not self-service\n• Alert HR and business unit managers to watch for suspicious account activity requests from staff\n\nWARNING: This is the single most effective containment action against vishing-based attacks. Social engineering bypasses all technical controls, the service desk verification process is the last line of defence.\n\nNOTE: SEE ALSO: Technical complement:\n• ID 61 (Lock External SSPR and Harden Help Desk Verification): This action (ID 66) covers the HUMAN/PROCEDURAL layer, briefing staff and activating verification protocols. ID 61 covers the TECHNICAL layer, disabling self-service password reset portals and restricting MFA registration in the IdP. Both must be activated in the same window. Locking the portal (ID 61) without briefing the service desk (ID 66) means attackers simply call the help desk instead. Activating the service desk protocol (ID 66) without the technical lock (ID 61) leaves the SSPR portal open as an alternative attack path.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud",
+        "windows_ad"
+      ],
+      "ta": [
+        "unknown",
+        "cred_dump"
+      ],
+      "killchain": "initial_access",
+      "ces": 4
+    },
+    {
+      "id": 67,
+      "activity": "Audit and Revoke Unauthorised OAuth App Registrations",
+      "effectiveness": "High",
+      "category": "Access Control",
+      "business_impact": "Low-Medium",
+      "notes": "Attackers register malicious OAuth applications in victim SaaS tenants to maintain persistent access that survives session revocation and MFA changes. OAuth app registrations grant long-lived access to mailboxes, files, and data using delegated permissions, they are invisible to the compromised user and survive password resets unless explicitly revoked.\n\nAudit and revoke across all SaaS platforms:\n\nGoogle Workspace:\n• Admin Console > Security > API controls > App access control > Manage Third-Party App Access\n• Review all apps with granted scopes: focus on mail, drive, and admin scopes\n• Remove any app not in your approved inventory: revoke immediately, do not wait to confirm malicious intent\n• Block new third-party app authorisations: Admin Console > Security > API controls > set to \"Don't allow users to access any third-party apps\"\n• Specifically hunt for apps with Gmail delete/modify scope, the ShinyHunters ToogleBox app used this to delete security notification emails\n\nMicrosoft Entra ID:\n• Entra admin center > Applications > Enterprise applications > filter by Created date\n• Review all apps consented to in the last 30: 90 days, compare against approved app inventory\n• Revoke user consent for suspicious apps: remove app from Enterprise Applications\n• Restrict future consent: Entra admin center > Enterprise applications > Consent and permissions > set User consent to \"Do not allow user consent\"\n• Require admin approval for all application registrations going forward\n\nOkta:\n• Admin Console > Applications: review all apps sorted by Created date\n• Revoke any unrecognised application or app with suspicious OAuth scopes\n• Review all API tokens: Admin Console > Security > API > Tokens, revoke any unknown token\n\nSalesforce:\n• Setup > Connected Apps OAuth Usage: review all connected apps and their access counts\n• Revoke access for any unrecognised connected app\n• Setup > OAuth and OpenID Connect Settings: review and restrict external OAuth usage\n\nWARNING: Revoking the user's session tokens (ID 53) does NOT revoke OAuth app authorisations. These must be revoked separately and explicitly.\nWARNING: Treat any unrecognised OAuth app with mail, files, calendar, or admin scopes as a confirmed persistence mechanism, revoke and investigate the granting account.\n\nWARNING: SEQUENCING DEPENDENCY: Before revoking OAuth app registrations, confirm:\n• ID 53 (Revoke Refresh Tokens): Revoke all user session tokens first so the attacker loses their authentication context. Revoking the OAuth app without revoking tokens leaves active sessions running. Execute ID 53 and ID 67 in the same containment window, treat them as a single atomic action.\n\nNOTE: SEE ALSO:\n• ID 33 (Pause MFA Enrollment): OAuth apps can provide authentication context bypassing MFA, pause MFA enrollment (ID 33) alongside revoking OAuth apps to close both vectors simultaneously.\n• ID 63 (Hunt Rogue VMs/Devices): Includes the discovery/hunting steps for OAuth app registrations (steps 7, 10). Use ID 63 to identify which apps to revoke, then execute this action (ID 67) to revoke them.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "unknown",
+        "exfil"
+      ],
+      "killchain": "persistence",
+      "ces": 4,
+      "depends_on": [
+        53
+      ]
+    },
+    {
+      "id": 68,
+      "activity": "Restrict SaaS-Native Bulk Export Capabilities",
+      "effectiveness": "High",
+      "category": "Content Filtering",
+      "business_impact": "Medium-High",
+      "notes": "Attackers in SaaS-targeted incidents (ShinyHunters, Scattered Spider) exfiltrate data entirely through native SaaS export features rather than external tools, making this invisible to traditional DLP and outbound traffic monitoring. Target: Google Takeout, Salesforce Data Loader, SharePoint/OneDrive bulk download via PowerShell, Atlassian bulk exports, and DocuSign bulk envelope downloads.\n\nGoogle Workspace, Disable Google Takeout:\n• Admin Console > Account > Account settings > Data export, disable for non-admin users\n• Admin Console > Users > Data export: confirm bulk export is disabled org-wide\n• Alert on any Takeout export initiation event in the Audit log during the incident window\n\nMicrosoft 365, Restrict SharePoint/OneDrive bulk download:\n• SharePoint Admin Center > Policies > Access control > set \"Unmanaged devices\" to allow view-only (no download)\n• Block PowerShell-based access: SharePoint Admin Center > Access control > Legacy authentication, disable to prevent scripted access\n• Conditional Access: require compliant device for SharePoint/OneDrive access, blocks attacker downloading from their own machine with stolen tokens\n• Alert on FileDownloaded events with WindowsPowerShell user-agent string via M365 Purview audit logs\n\nSalesforce, Restrict Data Loader and report exports:\n• Setup > Data Export: restrict or disable scheduled and on-demand data exports for non-admin users\n• Setup > Reports and Dashboards > Report Settings: disable \"Allow export\" for standard users during the incident\n• Setup > Connected Apps: revoke access for Salesforce Data Loader if it is being abused\n• Monitor BulkApiResultEvent and ReportEventStream for any activity during the incident window\n\nAtlassian (Confluence / Jira):\n• Space settings > Permissions: restrict export permissions for spaces containing sensitive data\n• Organisation admin: disable bulk page/space export for non-admin users during the incident\n• Alert on any bulk export or large-volume page access events in the audit log\n\nDocuSign:\n• Organisation admin > Security > Session management: force session termination for compromised accounts\n• Monitor BulkSend and envelope bulk-download events in DocuSign Monitor audit logs\n• Restrict API token access: revoke any API integration key created during the incident window\n\nWARNING: Restricting exports will impact legitimate business operations. Communicate to affected users and define a temporary exception process for business-critical export needs.\nWARNING: Combine with ID 67 (Revoke OAuth App Registrations), attackers may have OAuth apps with files.read scope that bypass direct export restrictions.\n\nNOTE: SEE ALSO: Execute in the same containment window:\n• ID 53 (Revoke Refresh Tokens): Restricting bulk exports while the attacker still holds valid session tokens means they can still download data via authenticated API calls before token expiry. Revoke tokens (ID 53) and restrict exports (ID 68) simultaneously.\n• ID 67 (Revoke OAuth App Registrations): An attacker with a malicious OAuth app can trigger bulk exports using the app's own client credentials, bypassing user token revocation entirely. Revoking the OAuth app (ID 67) closes this path. Execute IDs 53, 67, and 68 as a single coordinated action for SaaS exfil containment.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "exfil",
+        "unknown"
+      ],
+      "killchain": "collection",
+      "ces": 3
+    },
+    {
+      "id": 69,
+      "activity": "Scan for and Remediate Exposed Credentials in Code and Config",
+      "effectiveness": "High",
+      "category": "Identities",
+      "business_impact": "Low",
+      "notes": "Attackers targeting SaaS environments (ShinyHunters, Scattered Spider) actively exploit long-lived credentials embedded in source code, CI/CD pipelines, and configuration files. These non-human identities often carry privileged access and are rarely rotated, once found, they provide persistent access that survives session revocation, MFA changes, and even full password resets for human accounts.\n\nImmediate scanning steps:\n1. Source code repositories (GitHub, GitLab, Bitbucket, Azure DevOps):\n • Enable native \"Push Protection\" or \"Secret Scanning\", blocks new commits containing credentials before merge\n • Run a historical scan to identify secrets already committed using your repository's native secret scanning feature or an open source secret scanning tool\n • Scan ALL branches and commit history, not just the default branch\n • Revoke any discovered credential immediately before it can be exploited if not already\n\n2. CI/CD pipeline secrets (GitHub Actions, GitLab CI, Jenkins, Azure Pipelines):\n • Audit all pipeline variables and secrets stores, identify any credentials that are broadly accessible across pipelines\n • Rotate all secrets found in pipeline configs, treat all as compromised if the repo was accessible to the attacker\n • Replace static credentials with short-lived tokens via workload identity federation (OIDC) where feasible\n\n3. Cloud configuration files and IaC (Terraform, CloudFormation, Helm charts):\n • Scan for hard-coded access keys, passwords, or tokens in IaC templates\n • Common patterns: AWS_ACCESS_KEY_ID, client_secret, password=, api_key=, private_key\n\n4. Containerised environments:\n • Scan container images and Dockerfiles for embedded credentials\n • Review environment variables in container definitions and Kubernetes secrets\n\nPost-discovery actions:\n• Rotate ALL discovered credentials immediately: do not attempt to assess whether they were accessed first\n• Transition long-lived static credentials to workload identity federation / managed identities where feasible\n• Enforce strict scoping: credentials should be bound to specific resources, not granted broad permissions\n• Restrict authentication IPs for programmatic credentials to trusted IP ranges\n• Baseline expected behaviour for each credential type and integrate anomaly alerting into the SIEM\n\nWARNING: Non-human identities are frequently assigned privileged roles with minimal monitoring, assume any discovered credential has been used by the attacker until proven otherwise.\n\nWARNING: SEQUENCING NOTE: Credential rotation timing:\nIdeally, secret scanning (this action) should complete before or concurrently with credential rotation (ID 13, ID 29). If credentials embedded in source code or CI/CD pipelines are not discovered and removed first, developers may commit the newly rotated credentials into the same repositories during normal work, immediately re-exposing them. Run scanning tools before declaring credential rotation complete, and re-scan after rotation to confirm no new leaks.\n\nNOTE: SEE ALSO:\n• IDs 64/65 (Block AWS IAM/Federated User): Those actions remediate specific known-compromised identities. This action (ID 69) is a broader sweep that may reveal additional embedded credentials, including AWS access keys, that were not part of the original identified compromise. Run ID 69 alongside or after IDs 64/65 to ensure full coverage.",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "cred_dump",
+        "unknown"
+      ],
+      "killchain": "persistence",
+      "ces": 3
+    },
+    {
+      "id": 70,
+      "activity": "Disable Compromised User Accounts",
+      "category": "Identities",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "effectiveness": "High",
+      "business_impact": "Medium",
+      "ces": 4,
+      "depends_on": [],
+      "conflicts_with": [],
+      "notes": "Disabling confirmed or suspected compromised user accounts immediately revokes their authentication path across all integrated systems. Unlike credential rotation, which replaces a password the attacker may have already exfiltrated, disabling an account blocks all further authentication attempts regardless of what credentials the attacker holds. This is one of the most direct and high-certainty containment actions available at any stage of the incident.\n\nLATERAL MOVEMENT CONTEXT: During lateral movement, the attacker is pivoting between systems using valid user credentials. Disabling the specific accounts observed in attacker activity logs (EDR telemetry, authentication logs, SIEM) directly cuts the pivot path. Unlike network isolation (ID 4), which stops all traffic to a host, account disable surgically removes the identity without affecting other users on the same system. Prioritise disabling accounts observed authenticating from attacker-controlled hosts or from anomalous source IPs before those accounts are used to establish persistence via new accounts, GPO modifications, or scheduled tasks.\n\nThis action targets standard human user accounts. For privileged accounts (Domain Admins, Enterprise Admins), see ID 13 (Rotate All Privileged Accounts). For service accounts, see ID 11. For AWS IAM and federated identities, see IDs 64 and 65.\n\nAccounts to prioritise:\n• Any account confirmed as the initial access vector (phished, purchased, or brute-forced)\n• Any account observed in attacker activity logs that does not belong to a confirmed responder\n• Any account that authenticated from an attacker-controlled IP or during anomalous hours\n• Accounts belonging to departed employees or contractors that remain active\n• Any account flagged as high-risk by your IdP identity protection or UEBA tooling\n\nHow to disable by platform:\n\nActive Directory:\nDisable the account in Active Directory Users and Computers (ADUC) or via the Active Directory Administrative Center. Right-click the account and select Disable. For bulk disabling, use the Disable-ADAccount cmdlet in PowerShell or a scripted approach via your IT automation tooling.\n\nMicrosoft Entra ID (cloud-only or hybrid):\nEntra admin center > Users > [User] > Properties > Block sign-in: Yes. This immediately prevents new authentications. For hybrid accounts, disable at the on-premises AD source — the disabled state will sync to Entra ID within the next sync cycle (typically 30 minutes). If an immediate cloud-side block is required before sync completes, block sign-in in Entra ID directly AND disable in on-prem AD.\n\nOkta:\nAdmin Console > Directory > People > [User] > More Actions > Suspend (preserves the account and audit trail, reversible) or Deactivate (permanent, removes from all app assignments). During an active incident, prefer Suspend to retain the forensic record and allow reinstatement after investigation.\n\nGoogle Workspace:\nAdmin Console > Users > [User] > Suspend user. Suspending immediately blocks sign-in and terminates active sessions. The account and its data are preserved.\n\nWARNING: Disabling an account does NOT immediately terminate sessions already authenticated. Active tokens and session cookies issued before the disable remain valid until they expire or are explicitly revoked. After disabling, always revoke active sessions at the IdP level. Use the Revoke sessions option in the user profile for Entra ID, Clear User Sessions in Okta, and Reset sign-in cookies in Google Workspace. For SaaS accounts, combine with ID 53 (Revoke Refresh Tokens).\n\nWARNING: For hybrid AD and Entra ID environments, account state conflicts can cause unexpected re-enablement if the disable is applied only at one layer. Apply at both on-premises AD and Entra ID simultaneously and verify sync status before treating the account as fully disabled. If AD-to-Entra sync is still active (see ID 5), a delay of up to 30 minutes exists before the cloud-side block takes effect from an AD-side disable.\n\nWARNING: Before disabling any account, confirm the owner is not an active incident responder or a critical business role required during the response. Maintain a protected list of responder accounts and cross-check it before any bulk disable action.\n\nNOTE: SEE ALSO:\n• ID 53 (Revoke Refresh Tokens): Always revoke active sessions alongside account disable, particularly for SaaS and cloud accounts where token-based access survives account state changes.\n• ID 13 (Rotate All Privileged Accounts): Covers Domain Admins, Enterprise Admins, and all other privileged human accounts. This action (ID 70) covers standard user accounts confirmed as compromised. Run both in parallel.\n• ID 11 (Service Accounts): Covers non-human accounts. Run alongside ID 70 when service account compromise is suspected."
+    },
+    {
+      "id": 71,
+      "activity": "Isolate and Protect Backup Infrastructure",
+      "category": "Backup",
+      "phases": [
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "effectiveness": "High",
+      "business_impact": "Medium",
+      "ces": 4,
+      "depends_on": [],
+      "conflicts_with": [],
+      "notes": "Take the backup infrastructure offline to prevent ransomware from reaching and encrypting backup repositories. Ransomware operators specifically target backup systems to destroy the organisation's recovery path — enterprise backup platforms are targeted by name in documented ransomware playbooks. If the backup system is encrypted or corrupted before containment, recovery becomes significantly more difficult or impossible.\n\nImmediate isolation steps:\n1. Disconnect the backup server from the production network. Apply a deny-all firewall rule for the backup server's IP or VLAN, or physically remove the network connection. The backup server must not be reachable from any potentially compromised host.\n2. Disable backup agents on all confirmed or suspected compromised hosts. Backup agents run with elevated privileges and can be abused as a channel to reach the backup server from inside the compromised environment. Disable the backup agent service on hosts where attacker activity has been observed — consult your backup platform documentation for the service name on each OS.\n3. Suspend all active backup jobs immediately. An active backup job running during encryption may back up encrypted files over clean restore points, corrupting the recovery set.\n4. Revoke or change the backup service account credentials. Backup service accounts typically hold domain-level read access across all servers — if compromised, they provide the attacker with a read path to every system the backup agent covers. See ID 72 (Rotate Backup Credentials) for the full credential rotation procedure.\n5. If cloud backup targets are in use (S3, Azure Blob, Wasabi), apply bucket or container policies to deny delete and overwrite operations. Enable object lock or immutability on the target storage if not already active.\n\nBackup platform service management:\nEach backup platform provides a way to take repositories offline and stop its core service. Consult your platform's documentation for the exact steps — the general procedure is: take the backup repository or storage unit offline via the management console, then stop the backup server service so no new connections can be initiated.\n\nWARNING: Do NOT delete or format backup repositories during containment. Destroying backup data removes your recovery options. Isolate and protect the data — do not purge it.\n\nWARNING: Isolating the backup server will stop all backup jobs and may suspend backup monitoring alerts. Notify the backup team and IR lead before executing so they do not mistake the silence for normal operation.\n\nNOTE: SEE ALSO: ID 72 (Rotate Backup Credentials) must be executed alongside or immediately after this action. ID 73 (Verify Backup Integrity and Immutability) confirms whether the backups that survived are usable for recovery. ID 48 (Identify Backup Infrastructure Dependencies) should be completed before any recovery attempt."
+    },
+    {
+      "id": 72,
+      "activity": "Rotate Backup System Credentials",
+      "category": "Backup",
+      "phases": [
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "effectiveness": "High",
+      "business_impact": "Low-Medium",
+      "ces": 4,
+      "depends_on": [
+        60,
+        71
+      ],
+      "conflicts_with": [],
+      "notes": "Rotate all credentials associated with the backup infrastructure to ensure an attacker who has observed or extracted backup system credentials cannot re-access the backup environment after containment. Backup systems are high-value targets precisely because their service accounts carry broad read access across the environment — the same access that makes backups comprehensive also makes those credentials dangerous if compromised.\n\nCredentials to rotate:\n\nBackup software admin console accounts:\n• Rotate the local administrator password for the backup server itself\n• Rotate the backup software admin account (the local administrator account for the backup platform console)\n• Rotate any web console or REST API credentials for the backup platform\n\nBackup service accounts (used by agents to connect to the backup server):\n• Identify the service account the backup agents use to authenticate to the backup server — commonly a domain service account with read access to all protected systems\n• Rotate that credential immediately and update the backup server configuration with the new credential\n• Update agent configuration on all managed endpoints with the new service account credential\n\nCloud backup target credentials:\n• Rotate or deactivate any API keys, access keys, or SAS tokens used by the backup platform to write to cloud storage (S3 access keys, Azure Storage SAS tokens, GCP service account keys)\n• Issue new credentials with the minimum required permissions — write for backup jobs, read for restore jobs, no delete permission\n\nEncryption key passphrase (if applicable):\n• If backup data is encrypted with a passphrase managed by the organisation, rotate the passphrase and store the new value out-of-band in hardcopy or a physically isolated secure store\n• Do not store the new passphrase in the same PAM system or password manager used for other credentials until containment is confirmed (see ID 60)\n\nWARNING: SEQUENCING DEPENDENCY: Complete ID 71 (Isolate Backup Infrastructure) before rotating credentials. If the backup server is still reachable from compromised hosts when new credentials are issued, the attacker can observe the new credential through the still-live agent connection. Isolate first, rotate second.\n\nWARNING: SEQUENCING DEPENDENCY: Complete ID 60 (Isolate PAM / Password Vault) before rotating backup credentials. Storing new backup credentials in a compromised vault provides no protection.\n\nNOTE: SEE ALSO: ID 71 (Isolate Backup Infrastructure) is the prerequisite action. ID 13 (Rotate All Privileged Accounts) covers domain admin and other privileged accounts — the backup service account may also appear in that sweep. ID 73 (Verify Backup Integrity) should follow once credentials are rotated and the backup environment is secured."
+    },
+    {
+      "id": 73,
+      "activity": "Verify Backup Integrity and Immutability",
+      "category": "Backup",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "effectiveness": "High",
+      "business_impact": "Low",
+      "ces": 4,
+      "depends_on": [
+        71,
+        48
+      ],
+      "conflicts_with": [],
+      "notes": "Verify that backup data is intact, predates the compromise, has not been encrypted or corrupted, and can actually be used for recovery. A backup that exists but is encrypted, corrupted, or too recent to predate the initial compromise has no recovery value. This verification must happen before any recovery effort begins and before communicating recovery timelines to the business.\n\nStep 1: Establish the compromise timeline.\nConfirm the earliest suspected date of attacker access from EDR telemetry, authentication logs, and threat intelligence. This is the cutoff — backups that postdate this point may contain attacker artefacts, malware, or encrypted files and cannot be trusted for clean recovery.\n\nStep 2: Identify the most recent clean restore point.\nFind the most recent backup job that completed before the compromise timeline. For each candidate restore point, confirm:\n• The backup job completed successfully with no errors\n• The backup catalogue entry shows the expected file counts and sizes — a sudden drop in protected data may indicate the encryptor was already running when the backup ran\n• The backup file itself has not been modified since the job completed — compare file hashes or check the backup platform's own integrity logs\n\nStep 3: Verify immutability and air-gap status.\n• For cloud backup targets (S3, Azure Blob, Wasabi): confirm that Object Lock or immutability policies are active on the storage bucket or container. Verify that no delete or overwrite operations have been executed on the backup objects since the compromise date by reviewing the cloud provider's access logs (S3 server access logging, Azure Storage diagnostic logs).\n• For tape or removable media: confirm physical custody — verify the tape or drive has been offline since the last backup job and has not been connected to any system in the environment during the incident window.\n• For deduplicated repositories: run the backup platform's built-in integrity check or data verification job against the candidate restore point. Most enterprise backup platforms have a built-in verify or test-restore function that confirms the backup is internally consistent without performing a full restore — consult your platform's documentation for the current procedure.\n\nStep 4: Perform a test restore on an isolated system.\nBefore committing to a full production restore, restore a representative set of files or a single non-critical system to an isolated environment. Confirm the restored data:\n• Opens and functions correctly\n• Does not contain encrypted file extensions introduced by the ransomware\n• Does not trigger EDR or AV alerts on the restored host\n\nStep 5: Document the verified recovery baseline.\nRecord the restore point date and time, the systems covered, the backup platform and job name, and the integrity verification method used. This becomes the authoritative recovery baseline for the incident.\n\nWARNING: Do not begin any production recovery until a clean restore point has been verified. Restoring from a backup that itself contains the ransomware or the attacker's persistence mechanism will restart the incident.\n\nWARNING: VSS (Volume Shadow Copies) on Windows endpoints are typically deleted by ransomware before or during encryption. Do not rely on VSS as a primary recovery source — verify dedicated backup copies first. If VSS copies are found intact, treat them as supplemental to a verified backup, not a substitute.\n\nNOTE: SEE ALSO: ID 48 (Identify Backup Infrastructure Dependencies) maps the backup environment and must be completed before this action. ID 71 (Isolate Backup Infrastructure) must be completed to ensure the backup environment is stable before verification begins."
+    },
+    {
+      "id": 74,
+      "activity": "Kill Malicious Process",
+      "effectiveness": "High",
+      "category": "Network Segmentation",
+      "business_impact": "Low",
+      "phases": [
+        "active_encryption",
+        "lateral_movement",
+        "pre_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 4,
+      "depends_on": [],
+      "conflicts_with": [],
+      "notes": "Terminate the identified malicious process to stop active encryption or lateral movement immediately, without taking the entire host off the network. This is the most surgical containment action available when the specific malicious process has been identified and you need to stop its activity while preserving the host for forensics and continued investigation.\n\nUse when:\n• Active encryption is in progress and you can identify the encryptor process by name, PID, or file hash in the EDR console or Task Manager\n• A known attacker tool (C2 beacon, lateral movement binary, credential dumper) is running and you want to terminate it without isolating the host\n• You need to buy time to complete forensic collection before isolating the host (see ID 4)\n\nMethods:\n\nVia EDR console:\nMost EDR platforms support remote process termination from the management console — locate the process by name or PID on the target host and issue a terminate or kill command. This is the fastest and least disruptive method.\n\nVia Task Manager (local or remote):\nOpen Task Manager > Details tab > right-click the process > End Process Tree. Use End Process Tree rather than End Process to also terminate any child processes spawned by the malicious parent.\n\nVia PowerShell (if WinRM or PSRemoting is available):\nStop-Process -Name <processname> -Force\nOr by PID: Stop-Process -Id <PID> -Force\n\nVia PsKill or similar tools (on host or via admin share):\npskill \\\\<hostname> <PID or processname>\n\nWARNING: Killing a process does not guarantee the attacker cannot restart it. The binary may be scheduled, service-backed, or re-launched by a watchdog process. After terminating the process, immediately proceed to host isolation (ID 4) or firewall blocking (ID 16/38) to prevent re-launch from attacker-controlled infrastructure.\n\nWARNING: Killing an active encryption process does NOT decrypt already-encrypted files. It stops further encryption from that process only. Other processes or hosts may still be encrypting concurrently.\n\nWARNING: Do not kill the process before capturing a memory dump or forensic image if volatile evidence is needed. The process termination destroys in-memory artefacts including encryption keys that could be used for decryption. Capture first if forensics allow the time.\n\nNOTE: SEE ALSO: ID 4 (Isolate Host) is the next action after process termination — killing the process buys time, isolation removes the host from the attacker's reach. ID 16 and ID 38 (Firewall Rules) can prevent process re-launch from network-based execution paths."
+    },
+    {
+      "id": 75,
+      "activity": "Establish Out-of-Band Communications Channel",
+      "effectiveness": "High",
+      "category": "Evidence & Intelligence",
+      "business_impact": "Low",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "collection",
+      "ces": 4,
+      "depends_on": [],
+      "conflicts_with": [],
+      "notes": "During active encryption and post-encryption, the primary corporate communications infrastructure — email, Teams, Slack, VoIP, ticketing systems — must be treated as potentially compromised, monitored by the attacker, or unavailable due to encryption. Establishing a dedicated out-of-band channel before attempting any coordinated containment action ensures that attacker-held access to corporate comms does not expose your response strategy, and that the team can coordinate even if internal systems are fully offline.\n\nEstablish immediately on detection of active or post-encryption events:\n\n1. Designate a primary out-of-band channel:\nUse a platform entirely outside the corporate environment — personal mobile devices with a consumer messaging app (Signal is recommended for end-to-end encryption), a pre-provisioned external conference bridge, or an IR retainer's secure portal. The channel must not depend on corporate identity providers, corporate SSO, corporate email, or any system on the affected network.\n\n2. Establish a secondary backup channel:\nDesignate a fallback method in case the primary is unreachable — typically direct mobile phone calls between key responders using pre-shared personal numbers. Maintain a printed or offline contact list for all IR team members, legal counsel, the IR retainer, and executive stakeholders.\n\n3. Define who is on the channel:\nLimit membership to active responders — IR lead, technical leads, legal counsel, and executive sponsor. Do not include the broader IT team or business units on the primary tactical channel. Keep the size manageable; create a separate stakeholder update channel if leadership requires regular briefings.\n\n4. Establish communication discipline:\nAll containment decisions, action approvals, and response activities must be communicated and documented on the out-of-band channel — not over corporate email or Teams. Assume the attacker can read anything sent over corporate infrastructure until full eradication is confirmed.\n\n5. Notify staff via out-of-band means:\nIf internal communications systems are unavailable or must be shut down as part of containment, notify employees of system unavailability and expected timelines via personal email or SMS rather than corporate channels. Prepare a brief, non-technical message that does not disclose the nature of the incident.\n\nWARNING: Do not use any communication platform that authenticates via the compromised corporate identity provider. If the attacker holds admin access to Entra ID, Microsoft 365, or Google Workspace, they may be able to read messages sent through those platforms or intercept authentication.\n\nWARNING: Avoid discussing specific containment actions, identified attacker tools, or the scope of compromise over any channel that has not been confirmed as out-of-band. Premature disclosure of containment intent over a monitored channel may cause the attacker to accelerate encryption, destroy evidence, or exfiltrate additional data before actions can be executed.\n\nNOTE: SEE ALSO: ID 37 (Block ALL Traffic) and ID 36 (Restrict VPN) may take down the communication infrastructure responders are relying on — confirm the out-of-band channel is operational before executing either of those actions."
+    },
+    {
+      "id": 76,
+      "activity": "Block Vulnerable Drivers (BYOVD Prevention)",
+      "effectiveness": "High",
+      "category": "Application Control",
+      "business_impact": "Low-Medium",
+      "phases": [
+        "initial_access",
+        "lateral_movement",
+        "pre_encryption",
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "lateral",
+      "ces": 4,
+      "depends_on": [],
+      "conflicts_with": [],
+      "notes": "Ransomware operators and pre-ransomware actors use Bring Your Own Vulnerable Driver (BYOVD) attacks to load a legitimately signed but exploitable kernel driver, escalate to kernel-level privileges, and then disable or kill endpoint security software (EDR, AV) before deploying the encryptor. Blocking known vulnerable drivers prevents this technique from succeeding even if the attacker has user-level code execution.\n\nMicrosoft maintains an official Vulnerable Driver Blocklist that is enforced by Windows Defender Application Control (WDAC) and Hypervisor-Protected Code Integrity (HVCI). The blocklist is updated as new vulnerable drivers are discovered and is available at: https://aka.ms/VulnerableDriverBlockList\n\nMethod 1 — Enable HVCI (Hypervisor-Protected Code Integrity):\nHVCI uses hardware virtualisation to enforce kernel memory protections and applies the Microsoft Vulnerable Driver Blocklist automatically. This is the most effective method but requires compatible hardware and a reboot.\nEnable via Group Policy:\nComputer Configuration > Administrative Templates > System > Device Guard > Turn On Virtualization Based Security > Enabled\nSet 'Virtualization Based Protection of Code Integrity' to Enabled with UEFI lock.\nOr via Windows Security: Device Security > Core Isolation > Memory Integrity > On.\nWARNING: HVCI requires a reboot to take effect. Do not reboot compromised hosts before forensic collection is complete. Apply to clean, non-compromised hosts during the incident window.\n\nMethod 2 — Deploy the Microsoft Vulnerable Driver Blocklist via WDAC policy:\nFor environments that cannot enable HVCI immediately, the blocklist can be applied as a standalone WDAC supplemental policy.\nDownload the current blocklist policy from: https://aka.ms/VulnerableDriverBlockList\nDeploy the policy via Group Policy or MDM (Intune):\nGPO path: Computer Configuration > Administrative Templates > System > Device Guard > Deploy Windows Defender Application Control\nThe blocklist blocks driver files by hash and by publisher certificate where the entire publisher is blocked.\n\nMethod 3 — AV/EDR block rules for known LOLDrivers:\nMost enterprise AV and EDR platforms maintain a set of block rules for known vulnerable and abused drivers. Enable or verify that vulnerable driver blocking is active in your AV/EDR policy console. Common drivers abused in BYOVD attacks include but are not limited to RTCore64.sys, mhyprot2.sys, DBUtil_2_3.sys, and gdrv.sys — the full current list is maintained at https://aka.ms/VulnerableDriverBlockList and by the LOLDrivers project at https://www.loldrivers.io\n\nWARNING: This action must be applied to clean systems. A BYOVD attack that has already succeeded (driver already loaded) cannot be stopped by blocklist policy — the driver is already running in the kernel. For hosts where BYOVD is suspected, prioritise host isolation (ID 4) and process termination (ID 74) before applying this control.\n\nNOTE: SEE ALSO: ID 54 (Attack Surface Reduction Rules) includes the 'Block abuse of exploited vulnerable signed drivers' ASR rule, which complements this action by blocking driver-based privilege escalation attempts at the process layer. Run ID 54 and ID 76 together for layered BYOVD coverage."
+    }
+  ]
+}

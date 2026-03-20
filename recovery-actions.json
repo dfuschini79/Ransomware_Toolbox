@@ -1,0 +1,552 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Ransomware IR Toolbox — Recovery & Post-Encryption Actions",
+    "notes": "Edit this file to add, remove, or update recovery actions. These actions apply after encryption has occurred or is complete. Categories: Threat Actor Eviction | Zone Recovery | Backup & Recovery | Post-Rebuild Monitoring | Legal & Compliance. Phases: active_encryption | post_encryption. Infra: windows_ad | vmware | cloud | saas. TA tags: rdp | rmm | exfil | cred_dump | dc_access | backup_access."
+  },
+  "sections": [
+    {
+      "id": "data_scope",
+      "title": "Section 1 — Data Scope & Sensitivity",
+      "icon": "🔒",
+      "questions": [
+        {
+          "id": "ra-scope",
+          "label": "How many systems are confirmed encrypted or impacted?",
+          "type": "single",
+          "options": [
+            {
+              "label": "1–5 systems (isolated incident)",
+              "value": "small",
+              "style": "green"
+            },
+            {
+              "label": "6–50 systems (department/segment)",
+              "value": "medium",
+              "style": "amber"
+            },
+            {
+              "label": "50–200 systems (major impact)",
+              "value": "large",
+              "style": "red"
+            },
+            {
+              "label": "200+ systems (catastrophic / full domain)",
+              "value": "critical",
+              "style": "red"
+            }
+          ]
+        },
+        {
+          "id": "ra-sensitivity",
+          "label": "What is the sensitivity of the data on impacted systems?",
+          "type": "single",
+          "options": [
+            {
+              "label": "Low — internal / non-sensitive",
+              "value": "low",
+              "style": "green"
+            },
+            {
+              "label": "Medium — sensitive but limited scope",
+              "value": "medium",
+              "style": "amber"
+            },
+            {
+              "label": "High — regulated / customer / IP data",
+              "value": "high",
+              "style": "red"
+            },
+            {
+              "label": "Critical — could cause severe harm if leaked",
+              "value": "critical",
+              "style": "red"
+            }
+          ]
+        },
+        {
+          "id": "ra-exfil",
+          "label": "Is there confirmed evidence of data exfiltration (double extortion)?",
+          "type": "single",
+          "options": [
+            {
+              "label": "No evidence",
+              "value": "no",
+              "style": "green"
+            },
+            {
+              "label": "Suspected — unusual outbound traffic",
+              "value": "suspected",
+              "style": "amber"
+            },
+            {
+              "label": "Confirmed — data seen on leak site / ransom note mentions it",
+              "value": "confirmed",
+              "style": "red"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evidence_preservation",
+      "title": "Section 2 — Evidence Preservation",
+      "icon": "🧪",
+      "hint": "Rebuilding before preserving evidence destroys forensic data and may violate legal/insurance requirements",
+      "checklist": [
+        "Memory dumps captured from live compromised systems (if still running)",
+        "Disk images / snapshots taken of all impacted systems BEFORE any remediation",
+        "Network flow / firewall logs exported and preserved (30+ days if possible)",
+        "Windows Event Logs exported from all DCs and key servers",
+        "EDR telemetry exported / locked (confirm retention window with vendor)",
+        "Ransom notes, encrypted file samples, and malware artifacts preserved",
+        "All evidence stored on isolated, write-protected media or offline storage",
+        "Chain of custody document started (who handled what, when)"
+      ],
+      "questions": [
+        {
+          "id": "ra-forensics",
+          "label": "Has external IR support been requested?",
+          "type": "single",
+          "options": [
+            {
+              "label": "Yes — active on-site or remote",
+              "value": "yes-active",
+              "style": "green"
+            },
+            {
+              "label": "Yes — engaged, not started yet",
+              "value": "yes-pending",
+              "style": "amber"
+            },
+            {
+              "label": "No — handling internally",
+              "value": "no",
+              "style": "red"
+            }
+          ]
+        },
+        {
+          "id": "ra-rootcause",
+          "label": "Root cause / initial access vector identified?",
+          "type": "single",
+          "hint": "⚠️ Do NOT start rebuilding until the initial access vector is confirmed closed — you risk reinfection",
+          "options": [
+            {
+              "label": "Confirmed — vector known and closed",
+              "value": "confirmed",
+              "style": "green"
+            },
+            {
+              "label": "Likely — strong hypothesis, not fully confirmed",
+              "value": "likely",
+              "style": "amber"
+            },
+            {
+              "label": "Unknown — still investigating",
+              "value": "unknown",
+              "style": "red"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "insurance_legal",
+      "title": "Section 3 — Insurance & Legal",
+      "icon": "📋",
+      "questions": [
+        {
+          "id": "ra-insurance",
+          "label": "Do you have cyber insurance?",
+          "type": "single",
+          "insurance_trigger": true,
+          "options": [
+            {
+              "label": "Yes",
+              "value": "yes",
+              "style": "green"
+            },
+            {
+              "label": "Checking / Unsure",
+              "value": "checking",
+              "style": "amber"
+            },
+            {
+              "label": "No",
+              "value": "no",
+              "style": "red"
+            }
+          ]
+        },
+        {
+          "id": "ra-legal",
+          "label": "Legal / regulatory notifications required?",
+          "hint": "Based on data sensitivity selection above — check applicable regulations",
+          "type": "multi",
+          "options": [
+            {
+              "label": "GDPR — 72hr to DPA",
+              "value": "GDPR (72hr notification)"
+            },
+            {
+              "label": "LGPD — Brazil",
+              "value": "LGPD (Brazil)"
+            },
+            {
+              "label": "HIPAA breach",
+              "value": "HIPAA breach notification"
+            },
+            {
+              "label": "PCI DSS",
+              "value": "PCI DSS incident reporting"
+            },
+            {
+              "label": "State breach law",
+              "value": "State breach law notification"
+            },
+            {
+              "label": "SEC disclosure",
+              "value": "SEC material event disclosure"
+            },
+            {
+              "label": "Customer notification",
+              "value": "Customer notification required"
+            },
+            {
+              "label": "None identified",
+              "value": "None identified"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "backup_status",
+      "title": "Section 4 — Backup Status",
+      "icon": "💾",
+      "questions": [
+        {
+          "id": "ra-backup-status",
+          "label": "Were the backups impacted / encrypted?",
+          "type": "single",
+          "options": [
+            {
+              "label": "No — backups intact and accessible",
+              "value": "intact",
+              "style": "green"
+            },
+            {
+              "label": "Partial — some backups intact, some encrypted",
+              "value": "partial",
+              "style": "amber"
+            },
+            {
+              "label": "Yes — primary backups encrypted",
+              "value": "encrypted",
+              "style": "red"
+            },
+            {
+              "label": "Unknown — still verifying",
+              "value": "unknown",
+              "style": ""
+            }
+          ]
+        },
+        {
+          "id": "ra-offline-backup",
+          "label": "Do you have offline / air-gapped backups available?",
+          "type": "single",
+          "options": [
+            {
+              "label": "Yes — recent (< 7 days old)",
+              "value": "yes-recent",
+              "style": "green"
+            },
+            {
+              "label": "Yes — older (7–30 days)",
+              "value": "yes-old",
+              "style": "amber"
+            },
+            {
+              "label": "Yes — but >30 days old",
+              "value": "yes-stale",
+              "style": "red"
+            },
+            {
+              "label": "No offline backups",
+              "value": "no",
+              "style": "red"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recovery_capability",
+      "title": "Section 5 — Recovery Capability",
+      "icon": "🏗️",
+      "questions": [
+        {
+          "id": "ra-team",
+          "label": "Do you have dedicated staff for rebuild operations?",
+          "type": "single",
+          "options": [
+            {
+              "label": "Yes — dedicated team available",
+              "value": "yes",
+              "style": "green"
+            },
+            {
+              "label": "Limited — few staff available",
+              "value": "limited",
+              "style": "amber"
+            },
+            {
+              "label": "No — very limited capacity",
+              "value": "no",
+              "style": "red"
+            }
+          ]
+        },
+        {
+          "id": "ra-gold-image",
+          "label": "Do you have clean gold images for OS rebuild?",
+          "type": "single",
+          "options": [
+            {
+              "label": "Yes — tested and current",
+              "value": "yes",
+              "style": "green"
+            },
+            {
+              "label": "Partial — some images available",
+              "value": "partial",
+              "style": "amber"
+            },
+            {
+              "label": "No — will need to rebuild from scratch",
+              "value": "no",
+              "style": "red"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": 58,
+      "activity": "Reset KRBTGT Account Password (Twice)",
+      "effectiveness": "High",
+      "category": "Threat Actor Eviction",
+      "business_impact": "Medium-High",
+      "notes": "Reset the KRBTGT password TWICE — wait 10+ hours between resets to allow AD replication across all DCs.\nThis invalidates ALL existing Kerberos tickets in the domain, including any Golden Tickets the attacker may have minted.\n⚠️ Forces re-authentication of all Kerberos-authenticated services — schedule during a maintenance window if possible.\nAfter reset: verify all DCs have replicated the new password before proceeding.\n\n⚠️ PHASE RESTRICTION — KRBTGT reset must only be performed after the environment is confirmed clean and the attacker has been evicted. Resetting KRBTGT during active encryption forces immediate re-authentication of all Kerberos-authenticated services across every DC, risking loss of access to responders' own tools and creating cascading failures at the worst possible moment. Complete threat actor eviction and DC verification first, then execute this action.\n\n⚠️ CRITICAL — DPAPI BACKUP KEY COMPROMISE REQUIRES A DIFFERENT RESPONSE:\nThe KRBTGT reset and standard recovery procedures below address domain privilege compromise (Golden Tickets, Kerberos hash theft, credential abuse). However, if there are signs that the DPAPI backup key was also compromised, these procedures are insufficient and may give a false sense of remediation.\n\nDPAPI backup keys are a universal recovery mechanism — a skeleton key capable of decrypting every DPAPI-protected secret across the entire domain: saved credentials, certificate private keys, browser passwords, VPN credentials, BitLocker/EFS keys, cloud service tokens, and more. Critically, the DPAPI backup key is generated once when the domain is created and Microsoft provides no supported method to rotate it.\n\nMicrosoft's guidance is unambiguous: if DPAPI backup keys are confirmed or suspected compromised, the required response is to create a new domain and migrate users — not rebuild domain controllers within the existing domain. There is no path to cryptographic trust within the compromised domain structure.\n\nIndicators suggesting DPAPI backup key compromise:\n• Evidence of tools that extract DPAPI keys: Mimikatz lsadump::backupkeys, DCSync\n• Extended dwell time with sophisticated, persistent attacker behaviour\n• Evidence of data exfiltration of encrypted/credential data\n• Attacker persistence mechanisms surviving standard recovery procedures\n• Domain controller memory analysis or NTDS.dit manipulation evidence\n\nIf any of the above indicators are present, escalate immediately. Standard domain controller rebuild addresses attacker access but leaves the cryptographic exposure permanently in place — attackers retain the ability to decrypt protected data indefinitely.\n\nReference: SANS Institute — 'Critical Confusion: Why Most IT Professionals Misunderstand Microsoft's Domain Compromise Recovery Guidance' (2025): https://www.sans.org/blog/critical-confusion-why-most-it-professionals-misunderstand-microsofts-domain-compromise-recovery-guidance\nReference: Microsoft — DPAPI Backup Keys on AD Domain Controllers: https://learn.microsoft.com/en-us/windows/win32/seccng/cng-dpapi-backup-keys-on-ad-domain-controllers",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access",
+        "cred_dump"
+      ],
+      "killchain": "impact"
+    },
+    {
+      "id": 59,
+      "activity": "Establish Green Zone — Build Clean Isolated Network Segment",
+      "effectiveness": "High",
+      "category": "Zone Recovery",
+      "business_impact": "Low",
+      "notes": "Before rebuilding anything, establish a clean, monitored network segment with zero connectivity to infected systems:\n1. New VLAN or isolated cloud VNet — firewall rule blocking all traffic to/from Red/Yellow zones\n2. Deploy EDR on every new system BEFORE it connects to anything\n3. Enable centralised logging from day one\n4. MFA enforced on all access — no exceptions\n5. Document all systems in this zone and who is authorised to access them\nThis is your safe workspace for the IR team and rebuilding operations.",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "saas",
+        "cloud"
+      ],
+      "ta": [],
+      "killchain": "impact"
+    },
+    {
+      "id": 60,
+      "activity": "Hunt and Evict All Persistence Mechanisms",
+      "effectiveness": "High",
+      "category": "Threat Actor Eviction",
+      "business_impact": "Low",
+      "notes": "Attackers plant multiple persistence mechanisms before triggering ransomware. Search every system for:\n• Scheduled tasks (schtasks /query — compare against known baseline)\n• New local admin or AD accounts created in last 30–90 days\n• Modified or new GPOs — especially startup/logon scripts\n• Registry Run keys, RunOnce, Services (use Autoruns / Sysinternals)\n• Web shells on internet-facing systems (IIS, Exchange, web apps)\n• DLL sideloading or hollowed processes\n• Cloud backdoors: new OAuth app registrations, rogue MFA methods, Conditional Access bypass rules\n⚠️ One missed persistence mechanism = reinfection. Do not skip any system.",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad",
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "cred_dump",
+        "dc_access"
+      ],
+      "killchain": "impact"
+    },
+    {
+      "id": 61,
+      "activity": "Full Credential Reset — All Accounts Across All Systems",
+      "effectiveness": "High",
+      "category": "Threat Actor Eviction",
+      "business_impact": "High",
+      "notes": "Assume ALL credentials in the environment are compromised. Reset in strict order:\n1. All Domain Admin / Enterprise Admin / Schema Admin accounts\n2. All service accounts (rotate, don't just reset)\n3. Built-in Administrator on all systems — randomise, never reuse\n4. All standard user accounts — force password change at next login\n5. Azure AD / Entra ID — revoke ALL refresh tokens (Revoke-AzureADUserAllRefreshToken), reset passwords\n6. Third-party service accounts (backup agents, monitoring tools, AV console)\n7. Network infrastructure (firewall, switch, router management credentials)\n8. All API keys, service principals, managed identities\nEnforce MFA on all accounts before re-enabling access.",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad",
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "cred_dump"
+      ],
+      "killchain": "impact"
+    },
+    {
+      "id": 62,
+      "activity": "Verify and Classify All Backups Before Restoring",
+      "effectiveness": "High",
+      "category": "Backup & Recovery",
+      "business_impact": "Low",
+      "notes": "Never restore a backup directly into a connected environment without verification:\n1. Mount backup in a fully isolated environment (Green zone, no path to Red/Yellow)\n2. Run full EDR scan on backup content — check for embedded malware, webshells, or backdoored executables\n3. Check backup timestamps — confirm last known-clean backup predates the earliest evidence of intrusion\n4. Spot-check critical files for encryption signatures or corruption\n5. Test restore of one non-critical system before committing to full restore\n⚠️ Restoring an infected backup re-introduces the attacker into a clean environment.",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [
+        "backup_access"
+      ],
+      "killchain": "impact"
+    },
+    {
+      "id": 63,
+      "activity": "Rebuild Active Directory — Clean Domain Controllers",
+      "effectiveness": "High",
+      "category": "Zone Recovery",
+      "business_impact": "High",
+      "notes": "Do NOT restore a compromised DC VM snapshot — attacker persistence will survive.\nOption A (full compromise): Build new AD forest from scratch in Green zone. Migrate users and systems gradually. No trust with old forest during migration.\nOption B (partial compromise):\n1. Build new DC from a clean gold image in Green zone\n2. Seize FSMO roles to the new clean DC\n3. Restore SYSVOL from a verified pre-compromise backup\n4. Remove all compromised DCs from domain and decommission\n5. Reset KRBTGT password twice after all DCs are confirmed clean\nAudit all GPOs before importing — attacker may have modified them for persistence.",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [
+        "dc_access"
+      ],
+      "killchain": "impact"
+    },
+    {
+      "id": 64,
+      "activity": "Restore Systems Using Dependency-Ordered Sequence",
+      "effectiveness": "High",
+      "category": "Backup & Recovery",
+      "business_impact": "Medium-High",
+      "notes": "Restore in strict dependency order — restoring out of sequence creates circular failures:\n1. DNS / DHCP (nothing resolves without this)\n2. Domain Controllers (or build fresh — see action above)\n3. Certificate services (PKI)\n4. Core file and storage services\n5. Application servers (ERP, email, ticketing, etc.)\n6. Database servers\n7. End-user workstations (batch reimage using MDT/SCCM/Intune or cloud-based rebuild)\n⚠️ Do not reconnect each tier to the network until the tier above it is fully verified clean.",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "impact"
+    },
+    {
+      "id": 66,
+      "activity": "Deploy Baseline Security Controls on Every Rebuilt System",
+      "effectiveness": "High",
+      "category": "Zone Recovery",
+      "business_impact": "Low",
+      "notes": "Every system entering Green zone must pass a security baseline before connecting to anything:\n• EDR agent deployed, active, and reporting to a clean console (not the one attackers may have accessed)\n• OS fully patched to current level\n• Local admin password randomised (LAPS or equivalent — never shared across systems)\n• No default credentials anywhere\n• Host firewall enabled with lateral movement ports blocked (SMB/445, WinRM/5985, RDP/3389 restricted)\n• MFA enforced for all remote access\n• Unnecessary services disabled (WinRM if not needed, SMBv1, legacy protocols)\n• Logging enabled: PowerShell Script Block, Windows Security, Sysmon",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "impact"
+    },
+    {
+      "id": 67,
+      "activity": "Recover Cloud / SaaS Environment — Token Revocation and Audit",
+      "effectiveness": "High",
+      "category": "Threat Actor Eviction",
+      "business_impact": "Low",
+      "notes": "Cloud environments require specific recovery steps beyond on-premises:\n• Revoke ALL refresh tokens for all users (Microsoft: Revoke-AzureADUserAllRefreshToken or admin portal)\n• Audit all OAuth application registrations — remove any unknown or attacker-created apps\n• Review Conditional Access policies — attackers may have added exceptions or bypass rules\n• Review all Entra ID (Azure AD) admin role assignments — remove unknowns\n• Audit MFA registered devices — remove any unrecognised devices\n• Check mail forwarding rules — attackers often add silent mail forwards\n• Review SharePoint/OneDrive sharing — external shares may have been added for exfil",
+      "phases": [
+        "active_encryption",
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad",
+        "saas",
+        "cloud"
+      ],
+      "ta": [
+        "dc_access",
+        "cred_dump"
+      ],
+      "killchain": "impact"
+    },
+    {
+      "id": 68,
+      "activity": "Verify Yellow Zone Systems Before Promoting to Green",
+      "effectiveness": "High",
+      "category": "Zone Recovery",
+      "business_impact": "Low",
+      "notes": "For every Yellow zone system (not confirmed infected but at risk), verify ALL of the following before promotion to Green:\n1. Full EDR scan — no active malware, no suspicious processes, no persistence artifacts\n2. Windows Event Log review — no TA account logons (4624/4672/4648), no lateral movement (7045 new service)\n3. Review all scheduled tasks, services, and startup items for unknowns\n4. Patch level check — apply any missing critical/high severity patches\n5. Check group memberships — no unexpected admin accounts\n6. If ANY of the above are inconclusive: treat as Red and reimage\nDocument the verification and approver for every system — this is your audit trail.",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "impact"
+    },
+    {
+      "id": 69,
+      "activity": "Implement Enhanced Monitoring Before Reconnecting to Production",
+      "effectiveness": "High",
+      "category": "Post-Rebuild Monitoring",
+      "business_impact": "Low",
+      "notes": "Before reconnecting rebuilt systems or re-exposing the environment to the internet:\n• Honeypot accounts: create fake admin accounts with no legitimate use — any login = immediate alert\n• Canary files: place fake 'sensitive' documents in key file shares — access = immediate alert\n• Enable PowerShell Script Block logging on all systems\n• Configure SIEM alerts for known TA TTPs observed in this incident\n• Network detection: alert on SMB scanning, PsExec activity, WMI remote execution patterns\n• Alert on new scheduled tasks, service installs, and GPO modifications\n• Monitor for reconnection attempts from known TA C2 infrastructure (block and alert on IOCs)",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [
+        "windows_ad"
+      ],
+      "ta": [],
+      "killchain": "impact"
+    },
+    {
+      "id": 73,
+      "activity": "Engage Legal Counsel — Initiate Regulatory Notification Process",
+      "effectiveness": "Medium",
+      "category": "Legal & Compliance",
+      "business_impact": "Low",
+      "notes": "Engage your legal team or external counsel immediately to own the regulatory notification process.\nLegal must drive this — not IT, not communications.\n\nDeadlines run from moment of discovery:\n• GDPR: 72 hours to supervisory authority (DPA) — legal must determine if risk to individuals exists\n• HIPAA: 60 days to HHS OCR + individual notification; media if >500 in a single state\n• PCI DSS: notify acquiring bank and card brands immediately upon confirmed breach\n• SEC Rule 10b-5: material event disclosure for public companies — consult securities counsel\n• State breach laws: vary 30–90 days; NY SHIELD, California CCPA/CPRA are stricter\n\nLegal's role:\n→ Determine which regulations apply based on data types and jurisdictions affected\n→ Draft all regulatory notifications — do not send without legal review\n→ Advise on individual notification language and timing\n→ Manage privilege — keep IR communications under attorney-client privilege where possible\n→ Interface with regulators directly to manage the relationship",
+      "phases": [
+        "post_encryption"
+      ],
+      "infra": [],
+      "ta": [],
+      "killchain": "impact"
+    }
+  ]
+}
